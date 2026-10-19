@@ -1,0 +1,191 @@
+"use client";
+
+import { useState } from "react";
+import { Drawer } from "@base-ui/react/drawer";
+import { ClearRefinements, useCurrentRefinements } from "react-instantsearch";
+import { SearchBox } from "#/integrations/instantsearch/SearchBox";
+import { RefinementList } from "#/integrations/instantsearch/RefinementList";
+import { ToggleRefinement } from "#/integrations/instantsearch/ToggleRefinement";
+import { RangeInput } from "#/integrations/instantsearch/RangeInput";
+import { FilterSection } from "./FilterSection";
+import { m } from "#/paraglide/messages";
+import {
+  CircleStackIcon,
+  CalendarIcon,
+  ScaleIcon,
+  TagIcon,
+  GlobeAltIcon,
+  HashtagIcon,
+  LockClosedIcon,
+  DocumentIcon,
+} from "@heroicons/react/24/outline";
+import styles from "./FacetSidebar.module.css";
+import { cn } from "#/utils/cn";
+import { card, button } from "#/utils/surfaces";
+
+// Height of the collapsed "peek" state — handle + search box + padding.
+const PEEK_SNAP_POINT = "98px";
+const EXPANDED_SNAP_POINT = 1;
+
+function ClearRefinementsButton() {
+  const { items } = useCurrentRefinements();
+  if (items.length === 0) return null;
+
+  return (
+    <ClearRefinements
+      classNames={{
+        button: cn(button, "w-full"),
+      }}
+      translations={{
+        resetButtonText: m.clearRefinements(),
+      }}
+    />
+  );
+}
+
+function FiltersList() {
+  return (
+    <div className="space-y-5 [&>section]:pt-5 [&>section:first-child]:pt-0">
+      <FilterSection title={m.dataSource()} icon={<CircleStackIcon className="size-4" />}>
+        <RefinementList attribute="data_source" />
+      </FilterSection>
+
+      <FilterSection title={m.publicationYear()} icon={<CalendarIcon className="size-4" />}>
+        <RangeInput attribute="publication_year" />
+      </FilterSection>
+
+      <FilterSection title={m.license()} icon={<ScaleIcon className="size-4" />}>
+        <RefinementList attribute="license" />
+      </FilterSection>
+
+      <FilterSection title={m.subjects()} icon={<TagIcon className="size-4" />}>
+        <RefinementList attribute="subjects" searchable showMoreLimit={40} />
+      </FilterSection>
+
+      <FilterSection
+        title={m.language()}
+        icon={<GlobeAltIcon className="size-4" />}
+        defaultOpen={false}
+      >
+        <RefinementList attribute="languages" />
+      </FilterSection>
+
+      <FilterSection
+        title={m.keywords()}
+        icon={<HashtagIcon className="size-4" />}
+        defaultOpen={false}
+      >
+        <RefinementList attribute="keywords" searchable showMoreLimit={60} />
+      </FilterSection>
+
+      <FilterSection
+        title={m.accessConditions()}
+        icon={<LockClosedIcon className="size-4" />}
+        defaultOpen={false}
+      >
+        <ToggleRefinement attribute="file_access_request" label={m.restrictedAccess()} />
+      </FilterSection>
+
+      <FilterSection
+        title={m.fileCount()}
+        icon={<DocumentIcon className="size-4" />}
+        defaultOpen={false}
+      >
+        <RefinementList attribute="file_count_bucket" />
+      </FilterSection>
+    </div>
+  );
+}
+
+function DesktopSidebar() {
+  return (
+    <aside className={cn(card, "sticky top-8 h-fit w-80 shrink-0")}>
+      <div className="space-y-5">
+        <SearchBox />
+        <ClearRefinementsButton />
+        <FiltersList />
+      </div>
+    </aside>
+  );
+}
+
+function MobileFacetDrawer() {
+  const [snapPoint, setSnapPoint] = useState<Drawer.Root.SnapPoint | null>(PEEK_SNAP_POINT);
+  const isExpanded = snapPoint === EXPANDED_SNAP_POINT;
+
+  return (
+    <Drawer.Root
+      open
+      modal={isExpanded}
+      snapPoints={[PEEK_SNAP_POINT, EXPANDED_SNAP_POINT]}
+      snapPoint={snapPoint}
+      onSnapPointChange={setSnapPoint}
+      snapToSequentialPoints
+    >
+      <Drawer.SwipeArea
+        className="fixed inset-x-0 bottom-0 z-30 h-24 pointer-events-auto md:hidden"
+        swipeDirection="up"
+      />
+
+      <Drawer.Portal>
+        <Drawer.Backdrop
+          className={`${styles.Backdrop} fixed inset-0 z-20 bg-gray-600 dark:bg-gray-700 md:hidden backdrop-blur ${isExpanded ? "pointer-events-auto" : "pointer-events-none"}`}
+          onClick={() => setSnapPoint(PEEK_SNAP_POINT)}
+        />
+
+        <Drawer.Viewport
+          className={`fixed inset-x-0 bottom-0 z-30 pointer-events-none md:hidden ${isExpanded ? "h-auto" : ""}`}
+        >
+          <Drawer.Popup
+            className={`
+              ${styles.Popup}
+              pointer-events-auto
+              flex h-[85vh] flex-col
+              rounded-t-3xl border-t border-cyan-400 dark:border-cyan-600 shadow-xl backdrop-blur
+              bg-linear-to-b from-cyan-500 dark:from-cyan-700 to-white to-11% dark:to-gray-950 
+            `}
+          >
+            {/* Handle bar — the ONLY thing that toggles open <-> closed */}
+            <button
+              type="button"
+              className="flex w-full shrink-0 flex-col items-center pt-3 pb-3"
+              onClick={() => setSnapPoint(isExpanded ? PEEK_SNAP_POINT : EXPANDED_SNAP_POINT)}
+              aria-expanded={isExpanded}
+              aria-label={isExpanded ? "Collapse filters" : "Expand filters"}
+            >
+              <span className="block w-12 h-1.5 rounded-full bg-gray-100 dark:bg-gray-800" />
+            </button>
+
+            {/* Search box: opens the sheet on focus, but never closes it */}
+            <div
+              className="px-6 pb-3 mb-4"
+              onFocusCapture={() => {
+                if (!isExpanded) setSnapPoint(EXPANDED_SNAP_POINT);
+              }}
+            >
+              <SearchBox />
+            </div>
+
+            <Drawer.Content className="px-6 pb-6 overflow-y-auto space-y-5">
+              <ClearRefinementsButton />
+              <FiltersList />
+            </Drawer.Content>
+          </Drawer.Popup>
+        </Drawer.Viewport>
+      </Drawer.Portal>
+    </Drawer.Root>
+  );
+}
+
+export function FacetSidebar() {
+  return (
+    <>
+      <div className="hidden md:block">
+        <DesktopSidebar />
+      </div>
+      <div className="md:hidden">
+        <MobileFacetDrawer />
+      </div>
+    </>
+  );
+}
