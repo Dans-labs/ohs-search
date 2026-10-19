@@ -1,24 +1,24 @@
 import { useMatch, useNavigate } from "@tanstack/react-router";
 import { Drawer } from "@base-ui/react/drawer";
-import { Tabs } from "@base-ui/react/tabs";
+// import { Tabs } from "@base-ui/react/tabs";
 import { useEffect, useState } from "react";
 import {
-  CalendarIcon,
-  DocumentIcon,
-  CircleStackIcon,
-  ArrowTopRightOnSquareIcon,
-  UserIcon,
-  LockClosedIcon,
-  LockOpenIcon,
-  DocumentDuplicateIcon,
-  CheckIcon,
+  // CalendarIcon,
+  // DocumentIcon,
+  // CircleStackIcon,
+  // ArrowTopRightOnSquareIcon,
+  // UserIcon,
+  // LockClosedIcon,
+  // LockOpenIcon,
+  // DocumentDuplicateIcon,
+  // CheckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { SourceBadge, LicenseBadge } from "./Badges";
-import { formatDate, formatBytes } from "#/utils/formatters";
+// import { SourceBadge, LicenseBadge } from "./Badges";
+// import { formatDate, formatBytes } from "#/utils/formatters";
 import { m } from "#/paraglide/messages";
 import { cn } from "#/utils/cn";
-import { card, stats, devider, button } from "#/utils/surfaces";
+import { card, devider /*stats, button*/ } from "#/utils/surfaces";
 
 type Contact = { name: string; affiliation?: string | null };
 
@@ -117,13 +117,13 @@ export function DatasetDetails({
         <div className="space-y-8 px-8 pt-8 pb-0">
           <h1 className="text-2xl font-bold mb-2">{dataset.title}</h1>
           <div className="mt-3 flex flex-wrap gap-2">
-            <SourceBadge source={dataset.data_source} />
-            {dataset.license && <LicenseBadge license={dataset.license} />}
+            {/* <SourceBadge source={dataset.data_source} /> */}
+            {/* {dataset.license && <LicenseBadge license={dataset.license} />} */}
           </div>
         </div>
       )}
       <div className="p-4 space-y-4 md:space-y-8 md:p-8">
-        <CtaAndStats dataset={dataset} />
+        {/* <CtaAndStats dataset={dataset} /> */}
 
         {(dataset.description || dataset.descriptions) && (
           <section>
@@ -145,7 +145,7 @@ export function DatasetDetails({
             )}
           </section>
         )}
-        <DetailTabs dataset={dataset} />
+        {/* <DetailTabs dataset={dataset} /> */}
       </div>
     </>
   );
@@ -167,8 +167,8 @@ function Header({ dataset }: { dataset: DatasetDetail }) {
           </Drawer.Title>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            <SourceBadge source={dataset.data_source} />
-            {dataset.license && <LicenseBadge license={dataset.license} />}
+            {/* <SourceBadge source={dataset.data_source} /> */}
+            {/* {dataset.license && <LicenseBadge license={dataset.license} />} */}
           </div>
         </div>
 
@@ -190,7 +190,7 @@ function Header({ dataset }: { dataset: DatasetDetail }) {
 }
 
 /* ------------------------------ CTA + quick stats ------------------------------ */
-
+/*
 function CtaAndStats({ dataset }: { dataset: DatasetDetail }) {
   const size = formatBytes(dataset.total_file_size_bytes);
 
@@ -244,9 +244,10 @@ function StatTile({ icon, label, value }: { icon: React.ReactNode; label: string
     </div>
   );
 }
+*/
 
 /* ---------------------------------- Tabs ---------------------------------- */
-
+/*
 function DetailTabs({ dataset }: { dataset: DatasetDetail }) {
   return (
     <Tabs.Root defaultValue="people" className="w-full">
@@ -306,7 +307,7 @@ function TabTrigger({ value, children }: { value: string; children: React.ReactN
 }
 
 /* --------------------------------- Panels --------------------------------- */
-
+/*
 function PeoplePanel({ dataset }: { dataset: DatasetDetail }) {
   const hasContacts = dataset.contacts && dataset.contacts.length > 0;
 
@@ -361,7 +362,8 @@ function PeoplePanel({ dataset }: { dataset: DatasetDetail }) {
     </div>
   );
 }
-
+*/
+/*
 function ClassificationPanel({ dataset }: { dataset: DatasetDetail }) {
   return (
     <div className="space-y-5">
@@ -427,7 +429,8 @@ function ClassificationPanel({ dataset }: { dataset: DatasetDetail }) {
     </div>
   );
 }
-
+*/
+/*
 function AccessPanel({ dataset }: { dataset: DatasetDetail }) {
   const isPersonalData = dataset.personal_data_present?.toLowerCase() === "yes";
 
@@ -482,7 +485,8 @@ function AccessPanel({ dataset }: { dataset: DatasetDetail }) {
     </div>
   );
 }
-
+*/
+/*
 function IdentifiersPanel({ dataset }: { dataset: DatasetDetail }) {
   return (
     <div className="space-y-3">
@@ -492,9 +496,10 @@ function IdentifiersPanel({ dataset }: { dataset: DatasetDetail }) {
     </div>
   );
 }
+*/
 
 /* -------------------------------- Primitives -------------------------------- */
-
+/*
 function PanelGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
@@ -503,6 +508,7 @@ function PanelGroup({ title, children }: { title: string; children: React.ReactN
     </div>
   );
 }
+*/
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -512,6 +518,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+/*
 function MetadataRow({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
   return (
@@ -521,7 +528,8 @@ function MetadataRow({ label, value }: { label: string; value?: string }) {
     </div>
   );
 }
-
+*/
+/*
 function Chip({ children, tone = "zinc" }: { children: React.ReactNode; tone?: "zinc" | "cyan" }) {
   const styles =
     tone === "cyan"
@@ -538,7 +546,8 @@ function Chip({ children, tone = "zinc" }: { children: React.ReactNode; tone?: "
     </span>
   );
 }
-
+*/
+/*
 function EmptyState() {
   return (
     <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-center text-xs text-gray-400">
@@ -546,7 +555,8 @@ function EmptyState() {
     </div>
   );
 }
-
+*/
+/*
 function CopyableField({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -577,3 +587,4 @@ function CopyableField({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+*/

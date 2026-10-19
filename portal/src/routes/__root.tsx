@@ -32,7 +32,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "ODISSEI Portal",
+        title: "OH-SMArt Portal",
       },
     ],
     links: [
@@ -43,19 +43,19 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       {
         rel: "apple-touch-icon",
         sizes: "180x180",
-        href: "/src/assets/odissei-logo-180.png",
+        href: "/src/assets/logo-180.png",
       },
       {
         rel: "icon",
         type: "image/png",
         sizes: "32x32",
-        href: "/src/assets/odissei-logo-32.png",
+        href: "/src/assets/logo-32.png",
       },
       {
         rel: "icon",
         type: "image/png",
         sizes: "16x16",
-        href: "/src/assets/odissei-logo-16.png",
+        href: "/src/assets/logo-16.png",
       },
     ],
     scripts: [

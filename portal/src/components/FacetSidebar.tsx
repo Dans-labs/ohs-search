@@ -5,19 +5,19 @@ import { Drawer } from "@base-ui/react/drawer";
 import { ClearRefinements, useCurrentRefinements } from "react-instantsearch";
 import { SearchBox } from "#/integrations/instantsearch/SearchBox";
 import { RefinementList } from "#/integrations/instantsearch/RefinementList";
-import { ToggleRefinement } from "#/integrations/instantsearch/ToggleRefinement";
+// import { ToggleRefinement } from "#/integrations/instantsearch/ToggleRefinement";
 import { RangeInput } from "#/integrations/instantsearch/RangeInput";
 import { FilterSection } from "./FilterSection";
 import { m } from "#/paraglide/messages";
 import {
-  CircleStackIcon,
+  // CircleStackIcon,
   CalendarIcon,
   ScaleIcon,
   TagIcon,
   GlobeAltIcon,
-  HashtagIcon,
-  LockClosedIcon,
-  DocumentIcon,
+  // HashtagIcon,
+  // LockClosedIcon,
+  // DocumentIcon,
 } from "@heroicons/react/24/outline";
 import styles from "./FacetSidebar.module.css";
 import { cn } from "#/utils/cn";
@@ -46,20 +46,16 @@ function ClearRefinementsButton() {
 function FiltersList() {
   return (
     <div className="space-y-5 [&>section]:pt-5 [&>section:first-child]:pt-0">
-      <FilterSection title={m.dataSource()} icon={<CircleStackIcon className="size-4" />}>
-        <RefinementList attribute="data_source" />
-      </FilterSection>
-
       <FilterSection title={m.publicationYear()} icon={<CalendarIcon className="size-4" />}>
-        <RangeInput attribute="publication_year" />
+        <RangeInput attribute="published_year" />
       </FilterSection>
 
       <FilterSection title={m.license()} icon={<ScaleIcon className="size-4" />}>
-        <RefinementList attribute="license" />
+        <RefinementList attribute="licence" />
       </FilterSection>
 
       <FilterSection title={m.subjects()} icon={<TagIcon className="size-4" />}>
-        <RefinementList attribute="subjects" searchable showMoreLimit={40} />
+        <RefinementList attribute="subject_keywords" searchable showMoreLimit={40} />
       </FilterSection>
 
       <FilterSection
@@ -67,31 +63,7 @@ function FiltersList() {
         icon={<GlobeAltIcon className="size-4" />}
         defaultOpen={false}
       >
-        <RefinementList attribute="languages" />
-      </FilterSection>
-
-      <FilterSection
-        title={m.keywords()}
-        icon={<HashtagIcon className="size-4" />}
-        defaultOpen={false}
-      >
-        <RefinementList attribute="keywords" searchable showMoreLimit={60} />
-      </FilterSection>
-
-      <FilterSection
-        title={m.accessConditions()}
-        icon={<LockClosedIcon className="size-4" />}
-        defaultOpen={false}
-      >
-        <ToggleRefinement attribute="file_access_request" label={m.restrictedAccess()} />
-      </FilterSection>
-
-      <FilterSection
-        title={m.fileCount()}
-        icon={<DocumentIcon className="size-4" />}
-        defaultOpen={false}
-      >
-        <RefinementList attribute="file_count_bucket" />
+        <RefinementList attribute="language_metadata" />
       </FilterSection>
     </div>
   );

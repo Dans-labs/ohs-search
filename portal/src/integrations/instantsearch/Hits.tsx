@@ -2,24 +2,17 @@ import { useHits } from "react-instantsearch";
 import { SortBy } from "./Sort";
 import { Link } from "@tanstack/react-router";
 import { m } from "#/paraglide/messages";
-import { CalendarIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
-import { SourceBadge, LicenseBadge, FileCountBadge } from "#/components/Badges";
+import { CalendarIcon /*ArrowTopRightOnSquareIcon*/ } from "@heroicons/react/24/solid";
+// import { SourceBadge, LicenseBadge, FileCountBadge } from "#/components/Badges";
 import { formatDate } from "#/utils/formatters";
 import { cn } from "#/utils/cn";
 import { card } from "#/utils/surfaces";
 
 type DatasetHit = {
-  id: string;
+  doi: string;
   title: string;
   description?: string;
-  authors?: string[];
-  data_source: string;
-  license?: string;
-  date_of_deposit?: string;
-  doi?: string;
-  doi_url?: string;
-  file_count?: number;
-  file_access_request?: boolean;
+  published_year?: string;
 };
 
 export function Hits() {
@@ -33,7 +26,7 @@ export function Hits() {
       </div>
       <div className="space-y-4">
         {items.map((hit) => (
-          <ResultCard key={hit.id} hit={hit} />
+          <ResultCard key={hit.doi} hit={hit} />
         ))}
       </div>
     </div>
@@ -41,7 +34,7 @@ export function Hits() {
 }
 
 function ResultCard({ hit }: { hit: DatasetHit }) {
-  const formattedDate = formatDate(hit.date_of_deposit);
+  const formattedDate = formatDate(hit.published_year);
 
   return (
     <article className={cn("hover:-translate-y-0.5 hover:shadow-lg", card)}>
@@ -49,7 +42,7 @@ function ResultCard({ hit }: { hit: DatasetHit }) {
         <h3 className="text-lg font-semibold tracking-tight">
           <Link
             to="/view/$"
-            params={{ _splat: hit.id }}
+            params={{ _splat: hit.doi }}
             className="
               outline-none
               transition
@@ -64,13 +57,11 @@ function ResultCard({ hit }: { hit: DatasetHit }) {
             {hit.title}
           </Link>
         </h3>
-
-        <FileCountBadge count={hit.file_count} requested={hit.file_access_request} pid={hit.id} />
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <SourceBadge source={hit.data_source} />
-        {hit.license && <LicenseBadge license={hit.license} />}
+        {/* <SourceBadge source={hit.data_source} /> */}
+        {/* {hit.license && <LicenseBadge license={hit.license} />} */}
         {formattedDate && (
           <span className="inline-flex items-center gap-1 text-xs text-gray-400">
             <CalendarIcon className="size-4" />
@@ -82,13 +73,13 @@ function ResultCard({ hit }: { hit: DatasetHit }) {
       {hit.description && <p className="mt-4 line-clamp-3 text-sm">{hit.description}</p>}
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        {hit.authors?.length ? (
+        {/* {hit.authors?.length ? (
           <p className="text-xs text-gray-400">{hit.authors.join(", ")}</p>
         ) : (
           <span />
-        )}
+        )} */}
 
-        {hit.doi && (
+        {/* {hit.doi && (
           <a
             href={hit.doi_url ?? `https://doi.org/${hit.doi}`}
             target="_blank"
@@ -110,7 +101,7 @@ function ResultCard({ hit }: { hit: DatasetHit }) {
             {hit.doi}
             <ArrowTopRightOnSquareIcon className="size-4" />
           </a>
-        )}
+        )} */}
       </div>
     </article>
   );

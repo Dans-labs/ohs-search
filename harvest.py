@@ -30,7 +30,7 @@ import typesense
 BASE = os.environ.get("DATAVERSE_BASE", "https://ssh.datastations.nl").rstrip("/")
 FILE_NAME = "__generated__form-metadata-public.json"
 PER_PAGE = 1000
-COLLECTION = "interviews"
+COLLECTION = "datasets"
 FETCH_WORKERS = 8
 
 log = logging.getLogger("harvest")
