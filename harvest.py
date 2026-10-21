@@ -16,6 +16,7 @@ Usage:
   python harvest.py --dry-run  # show what would happen
 """
 import argparse
+import html
 import json
 import logging
 import os
@@ -98,6 +99,10 @@ SCHEMA = {
         {"name": "language_metadata", "type": "string", "facet": True, "optional": True},
         {"name": "language_metadata_code", "type": "string", "facet": True, "optional": True},
         {"name": "contact_email", "type": "string", "index": False, "optional": True},
+        {"name": "contact_name", "type": "string", "facet": True, "optional": True},
+        {"name": "contact_affiliation", "type": "string", "facet": True, "optional": True},
+        {"name": "depositor", "type": "string", "index": False, "optional": True},
+        {"name": "date_available", "type": "string", "optional": True},
         {"name": "publisher", "type": "string", "facet": True, "optional": True},
         {"name": "publisher_ror", "type": "string", "index": False, "optional": True},
         {"name": "publisher_country", "type": "string", "facet": True, "optional": True},
@@ -113,6 +118,7 @@ SCHEMA = {
         # --- attached files listed in the form metadata (non-private ones)
         {"name": "attachment_names", "type": "string[]", "optional": True},
         {"name": "attachment_types", "type": "string[]", "facet": True, "optional": True},
+        {"name": "attachment_roles", "type": "string[]", "facet": True, "optional": True},
         {"name": "attachment_count", "type": "int32", "sort": True, "optional": True},
         {"name": "attachment_size", "type": "int64", "sort": True, "optional": True},
         # Complete parsed metadata file kept for display, not indexed
@@ -233,11 +239,13 @@ def people(v):
 
 
 def dmy_dates(s):
-    """All DD-MM-YYYY dates in a string -> unix timestamps."""
+    """All DD-MM-YYYY [HH:MM] dates in a string -> unix timestamps (UTC)."""
     out = []
-    for d, mo, y in re.findall(r"(\d{1,2})-(\d{1,2})-(\d{4})", s or ""):
+    for d, mo, y, hh, mm in re.findall(
+            r"(\d{1,2})-(\d{1,2})-(\d{4})(?:[ T]+(\d{1,2}):(\d{2}))?", s or ""):
         try:
-            out.append(int(datetime(int(y), int(mo), int(d), tzinfo=timezone.utc).timestamp()))
+            out.append(int(datetime(int(y), int(mo), int(d), int(hh or 0), int(mm or 0),
+                                    tzinfo=timezone.utc).timestamp()))
         except ValueError:
             pass
     return out
@@ -518,6 +526,39 @@ def fetch_metadata(session, item):
     return parse_lenient(text, item["dataset_persistent_id"])
 
 
+_TYPES = {f["name"]: f["type"] for f in SCHEMA["fields"]}
+
+
+def _coerce(doc):
+    """Force every value to the schema type (the forms are not consistent:
+    a subtitle can be a string or a list), and unescape HTML entities (&amp;)."""
+    out = {}
+    for k, v in doc.items():
+        t = _TYPES.get(k)
+        if k == "raw" or t is None or v is None:
+            out[k] = v
+            continue
+        if t == "string":
+            if isinstance(v, (list, tuple)):
+                v = ", ".join(labels(v))
+            elif isinstance(v, dict):
+                v = label(v)
+            v = html.unescape(str(v)).strip()
+        elif t == "string[]":
+            v = [html.unescape(x) for x in labels(as_list(v))]
+        elif t in ("int32", "int64"):
+            try:
+                v = int(v)
+            except (TypeError, ValueError):
+                v = None
+        out[k] = v
+    return out
+
+
+def _is_true(v):
+    return v is True or str(v).strip().lower() == "true"
+
+
 def build_doc(item, meta):
     m = _form_root(meta)
     data = m.get("data") or {}
@@ -526,7 +567,14 @@ def build_doc(item, meta):
     rel = m.get("relations") or {}
     adm = m.get("administrative") or {}
     rights = m.get("rights") or {}
-    ohs = data.get("ohs") or {}
+    ohs = data.get("ohs") or m.get("ohs") or {}   # "ohs" sits under "data" or beside "citation"
+
+    def pick(key):
+        """Interview fields sit in "data" in some forms and in "ohs" in others."""
+        for src in (data, ohs):
+            if src.get(key) not in (None, "", [], {}):
+                return src[key]
+        return None
 
     # --- people
     interviewee = "; ".join(people(ohs.get("interviewee") or data.get("interviewee")))
@@ -534,7 +582,7 @@ def build_doc(item, meta):
     interpreter = people(ohs.get("interpreter") or data.get("interpreter"))
     others = people(ohs.get("others") or data.get("others"))
 
-    rec = [r for r in as_list(data.get("recorded_by")) if isinstance(r, dict)]
+    rec = [r for r in as_list(pick("recorded_by")) if isinstance(r, dict)]
     recorded_by = [n for n in (person(r) for r in rec) if n]
     rec_aff = sorted({str(r.get("recorded_by_affiliation")).strip() for r in rec
                       if r.get("recorded_by_affiliation")})
@@ -560,15 +608,15 @@ def build_doc(item, meta):
                 author_orcids.append(str(orcid))
 
     # --- dates
-    idates = [t for e in as_list(data.get("interview_date_time")) if isinstance(e, dict)
-              for t in dmy_dates(e.get("interview_date_time_range"))]
+    idates = [t for e in as_list(pick("interview_date_time")) if isinstance(e, dict)
+              for v in e.values() if isinstance(v, str) for t in dmy_dates(v)]
     interview_ts = min(idates) if idates else None
     interview_end = max(idates) if idates else None
     interview_year = (datetime.fromtimestamp(interview_ts, timezone.utc).year
                       if interview_ts else None)
 
-    sdt = " ".join(str(e.get("subject_date_time_range") or "")
-                   for e in as_list(cov.get("subject_date_time")) if isinstance(e, dict))
+    sdt = " ".join(str(v) for e in as_list(cov.get("subject_date_time")) if isinstance(e, dict)
+                   for v in e.values() if isinstance(v, str))
     y0, y1 = parse_year_range(sdt)
 
     # --- keywords, split by vocabulary (works for the flat and the merged layout)
@@ -597,14 +645,19 @@ def build_doc(item, meta):
 
     relations = [r for r in as_list(rel.get("relation")) if isinstance(r, dict)]
 
+    contact = adm.get("contact") if isinstance(adm.get("contact"), dict) else {}
+    # older forms have a single "language" (the metadata language); the
+    # language_interview / language_metadata split was added later
+    lang_m = adm.get("language_metadata") or adm.get("language")
+
     pub, rh = cit.get("publisher"), rights.get("rightsholder")
-    lic, lang_m = rights.get("licence_type"), adm.get("language_metadata")
+    lic = rights.get("licence_type")
 
     files = None
     for cand in (m.get("file-metadata"), meta.get("file-metadata"),
                  (meta.get("metadata") or {}).get("file-metadata")):
         if cand is not None:
-            files = [f for f in as_list(cand) if isinstance(f, dict) and not f.get("private")]
+            files = [f for f in as_list(cand) if isinstance(f, dict) and not _is_true(f.get("private"))]
             break
 
     pid = item["dataset_persistent_id"].replace("doi:", "")
@@ -635,17 +688,17 @@ def build_doc(item, meta):
         "author_affiliations": author_aff,
         "author_orcids": author_orcids,
         # interview
-        "interview_location": labels(data.get("interview_location")),
-        "interview_location_uri": uris(data.get("interview_location")),
-        "interview_location_geo": geopoints(data.get("interview_location")),
+        "interview_location": labels(pick("interview_location")),
+        "interview_location_uri": uris(pick("interview_location")),
+        "interview_location_geo": geopoints(pick("interview_location")),
         "interview_date": interview_ts,
         "interview_date_end": interview_end,
         "interview_year": interview_year,
         "language_interview": labels(adm.get("language_interview")),
         "language_interview_code": values(adm.get("language_interview")),
-        "recording_format": labels(data.get("recording_format")),
-        "recording_equipment": text_of(data.get("recording_equipment")),
-        "transcript_machine": text_of(data.get("transcript_machine")),
+        "recording_format": labels(pick("recording_format")),
+        "recording_equipment": text_of(pick("recording_equipment")),
+        "transcript_machine": text_of(pick("transcript_machine")),
         # subject
         "subject_keywords": labels(kws),
         "subject_keywords_aat": aat,
@@ -669,7 +722,11 @@ def build_doc(item, meta):
         # administrative / rights
         "language_metadata": label(lang_m),
         "language_metadata_code": (lang_m.get("value") if isinstance(lang_m, dict) else None),
-        "contact_email": adm.get("contact_email"),
+        "contact_email": adm.get("contact_email") or contact.get("contact_email"),
+        "contact_name": contact.get("contact_name"),
+        "contact_affiliation": contact.get("contact_affiliation"),
+        "depositor": cit.get("depositor"),
+        "date_available": adm.get("date_available"),
         "publisher": label(pub),
         "publisher_ror": uri(pub),
         "publisher_country": (pub.get("extraContent") if isinstance(pub, dict) else None),
@@ -685,13 +742,14 @@ def build_doc(item, meta):
         # attached files
         "attachment_names": [str(f["name"]) for f in files or [] if f.get("name")],
         "attachment_types": sorted({str(f["mimetype"]) for f in files or [] if f.get("mimetype")}),
+        "attachment_roles": sorted({label(f["role"]) for f in files or [] if f.get("role")}),
         "attachment_count": None if files is None else len(files),
-        "attachment_size": (None if files is None else
-                            sum(int(f.get("size") or 0) for f in files)),
+        "attachment_size": (sum(int(f["size"]) for f in files if str(f.get("size", "")).isdigit())
+                            if files and any(str(f.get("size", "")).isdigit() for f in files) else None),
         # everything, as parsed
         "raw": json.dumps(meta, ensure_ascii=False),
     }
-    return clean(doc)
+    return clean(_coerce(doc))
 
 
 # ------------------------------------------------------------------ sync
