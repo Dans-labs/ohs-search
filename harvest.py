@@ -43,38 +43,79 @@ SCHEMA = {
         {"name": "doi", "type": "string", "facet": False},
         {"name": "dataset_name", "type": "string"},
         {"name": "dataset_url", "type": "string", "index": False, "optional": True},
+        {"name": "dataset_citation", "type": "string", "index": False, "optional": True},
         {"name": "file_id", "type": "string", "index": False},
         {"name": "file_checksum", "type": "string", "index": False},
         {"name": "published_at", "type": "int64", "sort": True},
         {"name": "published_year", "type": "int32", "facet": True},
-        # --- from the form-metadata file
+        # --- descriptive
         {"name": "title", "type": "string"},
+        {"name": "subtitle", "type": "string", "optional": True},
         {"name": "description", "type": "string", "optional": True},
+        # --- people
         {"name": "interviewee", "type": "string", "facet": True, "optional": True},
         {"name": "interviewer", "type": "string[]", "facet": True, "optional": True},
-        {"name": "interviewer_affiliation", "type": "string[]", "facet": True, "optional": True},
+        {"name": "interpreter", "type": "string[]", "facet": True, "optional": True},
+        {"name": "others", "type": "string[]", "facet": True, "optional": True},
+        {"name": "recorded_by", "type": "string[]", "facet": True, "optional": True},
+        {"name": "recorded_by_affiliation", "type": "string[]", "facet": True, "optional": True},
+        {"name": "recorded_by_consent", "type": "string[]", "facet": True, "optional": True},
         {"name": "authors", "type": "string[]", "facet": True, "optional": True},
+        {"name": "author_affiliations", "type": "string[]", "facet": True, "optional": True},
+        {"name": "author_orcids", "type": "string[]", "facet": True, "optional": True},
+        # --- interview
         {"name": "interview_location", "type": "string[]", "facet": True, "optional": True},
+        {"name": "interview_location_uri", "type": "string[]", "index": False, "optional": True},
+        {"name": "interview_location_geo", "type": "geopoint[]", "optional": True},
         {"name": "interview_date", "type": "int64", "sort": True, "optional": True},
+        {"name": "interview_date_end", "type": "int64", "sort": True, "optional": True},
         {"name": "interview_year", "type": "int32", "facet": True, "optional": True},
-        {"name": "subject_keywords", "type": "string[]", "facet": True, "optional": True},
-        {"name": "subject_locations", "type": "string[]", "facet": True, "optional": True},
-        {"name": "subject_year_start", "type": "int32", "facet": True, "optional": True},
-        {"name": "subject_year_end", "type": "int32", "facet": True, "optional": True},
-        {"name": "audience", "type": "string[]", "facet": True, "optional": True},
-        {"name": "collections", "type": "string[]", "facet": True, "optional": True},
         {"name": "language_interview", "type": "string[]", "facet": True, "optional": True},
-        {"name": "language_metadata", "type": "string", "facet": True, "optional": True},
-        {"name": "publisher", "type": "string", "facet": True, "optional": True},
-        {"name": "rightsholder", "type": "string", "facet": True, "optional": True},
-        {"name": "licence", "type": "string", "facet": True, "optional": True},
-        {"name": "contains_personal_data", "type": "bool", "facet": True, "optional": True},
-        {"name": "transcript_machine", "type": "string", "facet": True, "optional": True},
+        {"name": "language_interview_code", "type": "string[]", "facet": True, "optional": True},
         {"name": "recording_format", "type": "string[]", "facet": True, "optional": True},
         {"name": "recording_equipment", "type": "string", "facet": True, "optional": True},
-        {"name": "grants", "type": "string[]", "facet": True, "optional": True},
+        {"name": "transcript_machine", "type": "string", "facet": True, "optional": True},
+        # --- subject
+        {"name": "subject_keywords", "type": "string[]", "facet": True, "optional": True},
+        {"name": "subject_keywords_aat", "type": "string[]", "facet": True, "optional": True},
+        {"name": "subject_keywords_wikidata", "type": "string[]", "facet": True, "optional": True},
+        {"name": "subject_keywords_freetext", "type": "string[]", "facet": True, "optional": True},
+        {"name": "subject_keyword_uri", "type": "string[]", "index": False, "optional": True},
+        {"name": "subject_locations", "type": "string[]", "facet": True, "optional": True},
+        {"name": "subject_location_uri", "type": "string[]", "index": False, "optional": True},
+        {"name": "subject_locations_geo", "type": "geopoint[]", "optional": True},
+        {"name": "subject_year_start", "type": "int32", "facet": True, "optional": True},
+        {"name": "subject_year_end", "type": "int32", "facet": True, "optional": True},
+        # --- relations
+        {"name": "audience", "type": "string[]", "facet": True, "optional": True},
+        {"name": "audience_uri", "type": "string[]", "index": False, "optional": True},
+        {"name": "collections", "type": "string[]", "facet": True, "optional": True},
+        {"name": "collections_uri", "type": "string[]", "index": False, "optional": True},
+        {"name": "relation_type", "type": "string[]", "facet": True, "optional": True},
+        {"name": "relation_item", "type": "string[]", "optional": True},
+        {"name": "relation_reference", "type": "string[]", "optional": True},
+        # --- administrative / rights
+        {"name": "language_metadata", "type": "string", "facet": True, "optional": True},
+        {"name": "language_metadata_code", "type": "string", "facet": True, "optional": True},
         {"name": "contact_email", "type": "string", "index": False, "optional": True},
-        # Raw metadata kept for display, not indexed
+        {"name": "publisher", "type": "string", "facet": True, "optional": True},
+        {"name": "publisher_ror", "type": "string", "index": False, "optional": True},
+        {"name": "publisher_country", "type": "string", "facet": True, "optional": True},
+        {"name": "rightsholder", "type": "string", "facet": True, "optional": True},
+        {"name": "rightsholder_ror", "type": "string", "index": False, "optional": True},
+        {"name": "rightsholder_country", "type": "string", "facet": True, "optional": True},
+        {"name": "licence", "type": "string", "facet": True, "optional": True},
+        {"name": "licence_url", "type": "string", "index": False, "optional": True},
+        {"name": "contains_personal_data", "type": "bool", "facet": True, "optional": True},
+        {"name": "grants", "type": "string[]", "facet": True, "optional": True},
+        {"name": "grant_agencies", "type": "string[]", "facet": True, "optional": True},
+        {"name": "grant_numbers", "type": "string[]", "optional": True},
+        # --- attached files listed in the form metadata (non-private ones)
+        {"name": "attachment_names", "type": "string[]", "optional": True},
+        {"name": "attachment_types", "type": "string[]", "facet": True, "optional": True},
+        {"name": "attachment_count", "type": "int32", "sort": True, "optional": True},
+        {"name": "attachment_size", "type": "int64", "sort": True, "optional": True},
+        # Complete parsed metadata file kept for display, not indexed
         {"name": "raw", "type": "string", "index": False, "optional": True},
     ],
     "default_sorting_field": "published_at",
@@ -150,6 +191,72 @@ def clean(d):
     return {k: v for k, v in d.items() if v not in (None, "", [], {})}
 
 
+def as_list(v):
+    if v is None or v == "":
+        return []
+    return v if isinstance(v, list) else [v]
+
+
+def values(v):
+    """The 'value' part of {label,value} dicts (codes, URIs)."""
+    return [str(x["value"]).strip() for x in as_list(v)
+            if isinstance(x, dict) and x.get("value")]
+
+
+def uris(v):
+    return [x for x in values(v) if x.startswith("http")]
+
+
+def uri(v):
+    u = uris(v)
+    return u[0] if u else ""
+
+
+def person(p):
+    """'First Last' from {x_first_name, x_last_name}; tolerant of other shapes."""
+    if isinstance(p, dict):
+        first = last = ""
+        for k, val in p.items():
+            if k.endswith("first_name"):
+                first = str(val or "").strip()
+            elif k.endswith("last_name"):
+                last = str(val or "").strip()
+        if first or last:
+            return " ".join(x for x in (first, last) if x)
+        return " ".join(str(val).strip() for k, val in p.items()
+                        if isinstance(val, str) and val.strip() and "consent" not in k)
+    return str(p or "").strip()
+
+
+def people(v):
+    return [n for n in (person(p) for p in as_list(v)) if n]
+
+
+def dmy_dates(s):
+    """All DD-MM-YYYY dates in a string -> unix timestamps."""
+    out = []
+    for d, mo, y in re.findall(r"(\d{1,2})-(\d{1,2})-(\d{4})", s or ""):
+        try:
+            out.append(int(datetime(int(y), int(mo), int(d), tzinfo=timezone.utc).timestamp()))
+        except ValueError:
+            pass
+    return out
+
+
+def geopoints(v):
+    """Locations carry coordinates as ["lon","lat"] strings; Typesense wants [lat, lon]."""
+    out = []
+    for x in as_list(v):
+        c = x.get("coordinates") if isinstance(x, dict) else None
+        try:
+            lon, lat = float(c[0]), float(c[1])
+        except (TypeError, ValueError, IndexError):
+            continue
+        if -90 <= lat <= 90 and -180 <= lon <= 180:
+            out.append([lat, lon])
+    return out
+
+
 # ------------------------------------------------------------ harvesting
 def harvest_file_list(session):
     items, start = [], 0
@@ -215,15 +322,41 @@ def _fix_extra_content(text):
         text)
 
 
+def _flat_to_nested(f):
+    """Files exported as a flat {"id", "metadata": {...}} -> the nested layout."""
+    g = f.get
+    return {
+        "data": {
+            "ohs": {k: g(k) for k in ("interviewee", "interviewer", "interpreter", "others") if g(k)},
+            **{k: g(k) for k in ("interview_location", "interview_date_time", "recorded_by",
+                                 "recording_format", "recording_equipment", "transcript_machine")},
+        },
+        "citation": {k: g(k) for k in ("title", "subtitle", "description", "publisher", "author", "grant")},
+        "coverage": {
+            "subject_keywords": [*as_list(g("subject_keywords_aat")),
+                                 *as_list(g("subject_keywords_wikidata")),
+                                 *as_list(g("subject_keywords_freetext"))],
+            "subject_location": g("subject_location"),
+            "subject_date_time": g("subject_date_time"),
+        },
+        "relations": {k: g(k) for k in ("audience", "collections", "relation")},
+        "administrative": {k: g(k) for k in ("language_interview", "language_metadata", "contact_email")},
+        "rights": {k: g(k) for k in ("rightsholder", "licence_type", "personal_data")},
+    }
+
+
 def _form_root(meta):
     """
-    Return the dict that holds citation/coverage/rights/... Files come in two
-    shapes: the form object itself ({"data": {...}, "citation": {...}, ...}),
-    or wrapped one level deeper ({"data": {"data": ..., "citation": ...}}).
+    Return the nested dict that holds data/citation/coverage/rights/... Files come in
+      * nested:  {"data": {...}, "citation": {...}, ...}
+      * wrapped: {"data": {"data": ..., "citation": ...}}
+      * flat:    {"id": ..., "metadata": {"interviewee": ..., "title": ..., ...}}
     """
     inner = meta.get("data")
     if isinstance(inner, dict) and "citation" in inner and "citation" not in meta:
         return inner
+    if isinstance(meta.get("metadata"), dict) and "citation" not in meta:
+        return _flat_to_nested(meta["metadata"])
     return meta
 
 
@@ -280,6 +413,10 @@ def _repair_structure(text, e):
 
     stack = _open_stack(text, pos)
 
+    # "key": [ <whitespace> }   -> list that was opened but never filled/closed
+    if stripped[:1] == "}" and stack and stack[-1] == "[":
+        return head + "]" + rest
+
     if not stripped:
         if not stack:
             return None
@@ -303,42 +440,74 @@ def _repair_structure(text, e):
     return None
 
 
+def _repair_all(dec, text):
+    """Escape stray quotes, then fix structure one decoder error at a time."""
+    text = _escape_stray_quotes(_fix_extra_content(text))
+    for _ in range(50):
+        try:
+            obj, end = dec.raw_decode(text)
+            return obj, end, text
+        except json.JSONDecodeError as e:
+            fixed = _repair_structure(text, e)
+            if fixed is None:
+                lo = max(0, e.pos - 100)
+                raise ValueError(
+                    f"{e.msg} at char {e.pos}; near: {text[lo:e.pos + 100]!r}") from None
+            text = fixed
+    raise ValueError("gave up after 50 structural repairs")
+
+
+def _tail_members(dec, tail):
+    """Some files close the root object too early: '... } , "file-metadata": [...] }'."""
+    t = tail.lstrip(", \t\r\n")
+    if not t.startswith('"'):
+        return {}
+    try:
+        obj, _ = dec.raw_decode("{" + t)
+        return obj if isinstance(obj, dict) else {}
+    except json.JSONDecodeError:
+        return {}
+
+
 def parse_lenient(text, label_=""):
     """
     Parse JSON that may be slightly broken. Tolerates:
       * raw control characters (newlines/tabs) inside strings
       * unescaped double quotes inside strings
-      * trailing garbage after the first complete JSON value
+      * lists that were opened but never closed, trailing/missing commas, missing closers
+      * members after the root object was closed early (kept, e.g. "file-metadata")
+    If the file cannot be repaired as a whole, the (optional) "file-metadata"
+    section is cut off and the rest is repaired.
     """
     dec = json.JSONDecoder(strict=False)
-    text = text.lstrip("﻿ \t\r\n")
-    text = _cut_file_metadata(text)
+    text = text.lstrip("\ufeff \t\r\n")
+    original = text
     notes = []
     try:
         obj, end = dec.raw_decode(text)
     except json.JSONDecodeError:
-        text = _escape_stray_quotes(_fix_extra_content(text))
-        notes.append("quotes")
-        for _ in range(50):
+        notes.append("repaired")
+        try:
+            obj, end, text = _repair_all(dec, original)
+        except ValueError as first_err:
+            cut = _cut_file_metadata(original)
+            if cut == original:
+                raise
             try:
-                obj, end = dec.raw_decode(text)
-                break
-            except json.JSONDecodeError as e:
-                fixed = _repair_structure(text, e)
-                if fixed is None:
-                    lo = max(0, e.pos - 100)
-                    raise ValueError(
-                        f"{e.msg} at char {e.pos}; near: {text[lo:e.pos + 100]!r}") from None
-                text = fixed
-                notes.append("structure")
-        else:
-            raise ValueError("gave up after 50 structural repairs")
+                obj, end, text = _repair_all(dec, cut)
+                notes.append("file-metadata dropped")
+            except ValueError:
+                raise first_err from None
     tail = text[end:].strip()
     if tail.strip("} \t\r\n,"):
-        log.warning("%s: ignoring %d chars of trailing data", label_, len(tail))
+        extra = _tail_members(dec, tail)
+        if extra and isinstance(obj, dict):
+            for k, v in extra.items():
+                obj.setdefault(k, v)
+        else:
+            log.warning("%s: ignoring %d chars of trailing data", label_, len(tail))
     if notes:
-        log.warning("%s: metadata file was not valid JSON; repaired (%s)",
-                    label_, ", ".join(dict.fromkeys(notes)))
+        log.warning("%s: metadata file was not valid JSON; %s", label_, ", ".join(notes))
     return obj
 
 
@@ -351,75 +520,177 @@ def fetch_metadata(session, item):
 
 def build_doc(item, meta):
     m = _form_root(meta)
-    data = m.get("data", {})
-    cit = m.get("citation", {})
-    cov = m.get("coverage", {})
-    rel = m.get("relations", {})
-    adm = m.get("administrative", {})
-    rights = m.get("rights", {})
+    data = m.get("data") or {}
+    cit = m.get("citation") or {}
+    cov = m.get("coverage") or {}
+    rel = m.get("relations") or {}
+    adm = m.get("administrative") or {}
+    rights = m.get("rights") or {}
+    ohs = data.get("ohs") or {}
 
-    ie = data.get("ohs", {}).get("interviewee", {})
-    interviewee = " ".join(filter(None, [ie.get("interviewee_first_name"),
-                                         ie.get("interviewee_last_name")]))
-    rec = data.get("recorded_by", []) or []
-    interviewer = [" ".join(filter(None, [r.get("recorded_by_first_name"),
-                                          r.get("recorded_by_last_name")])) for r in rec]
-    interviewer_aff = [r.get("recorded_by_affiliation") for r in rec]
+    # --- people
+    interviewee = "; ".join(people(ohs.get("interviewee") or data.get("interviewee")))
+    interviewer = people(ohs.get("interviewer") or data.get("interviewer"))
+    interpreter = people(ohs.get("interpreter") or data.get("interpreter"))
+    others = people(ohs.get("others") or data.get("others"))
 
-    idt = (data.get("interview_date_time") or [{}])[0].get("interview_date_time_range")
-    interview_ts = parse_dmy_range(idt)
+    rec = [r for r in as_list(data.get("recorded_by")) if isinstance(r, dict)]
+    recorded_by = [n for n in (person(r) for r in rec) if n]
+    rec_aff = sorted({str(r.get("recorded_by_affiliation")).strip() for r in rec
+                      if r.get("recorded_by_affiliation")})
+    rec_consent = sorted({str(r.get("recorded_by_consent")).strip() for r in rec
+                          if r.get("recorded_by_consent")})
+
+    authors, author_aff, author_orcids = [], [], []
+    for a in as_list(cit.get("author")):
+        if not isinstance(a, dict):
+            continue
+        nm = a.get("name") or {}
+        n = label(nm) if isinstance(nm, dict) else str(nm).strip()
+        if n:
+            authors.append(n)
+        if a.get("affiliation"):
+            author_aff.append(text_of(a["affiliation"]))
+        if isinstance(nm, dict):
+            val = str(nm.get("value") or "")
+            orcid = nm.get("id") if "orcid" in str(nm.get("idLabel", "")).lower() else None
+            if not orcid and "orcid.org/" in val:
+                orcid = val.rsplit("/", 1)[-1]
+            if orcid:
+                author_orcids.append(str(orcid))
+
+    # --- dates
+    idates = [t for e in as_list(data.get("interview_date_time")) if isinstance(e, dict)
+              for t in dmy_dates(e.get("interview_date_time_range"))]
+    interview_ts = min(idates) if idates else None
+    interview_end = max(idates) if idates else None
     interview_year = (datetime.fromtimestamp(interview_ts, timezone.utc).year
                       if interview_ts else None)
 
-    sdt = (cov.get("subject_date_time") or [{}])[0].get("subject_date_time_range")
+    sdt = " ".join(str(e.get("subject_date_time_range") or "")
+                   for e in as_list(cov.get("subject_date_time")) if isinstance(e, dict))
     y0, y1 = parse_year_range(sdt)
 
+    # --- keywords, split by vocabulary (works for the flat and the merged layout)
+    kws = as_list(cov.get("subject_keywords"))
+    aat, wiki, free = [], [], []
+    for x in kws:
+        lab = label(x)
+        val = str(x.get("value") or "") if isinstance(x, dict) else ""
+        if not lab:
+            continue
+        if "vocab.getty.edu" in val:
+            aat.append(lab)
+        elif "wikidata.org" in val:
+            wiki.append(lab)
+        else:
+            free.append(lab)
+
+    # --- misc
     published = ts(item["published_at"])
     pd = rights.get("personal_data")
     personal = None if pd is None else str(pd).endswith("true")
 
+    grant_list = [g for g in as_list(cit.get("grant")) if isinstance(g, dict)]
     grants = [" ".join(filter(None, [g.get("grant_agency"), g.get("grant_number")]))
-              for g in cit.get("grant", []) or []]
+              for g in grant_list]
 
+    relations = [r for r in as_list(rel.get("relation")) if isinstance(r, dict)]
+
+    pub, rh = cit.get("publisher"), rights.get("rightsholder")
+    lic, lang_m = rights.get("licence_type"), adm.get("language_metadata")
+
+    files = None
+    for cand in (m.get("file-metadata"), meta.get("file-metadata"),
+                 (meta.get("metadata") or {}).get("file-metadata")):
+        if cand is not None:
+            files = [f for f in as_list(cand) if isinstance(f, dict) and not f.get("private")]
+            break
+
+    pid = item["dataset_persistent_id"].replace("doi:", "")
     doc = {
+        # Dataverse
         "id": str(item["dataset_id"]),
-        "doi": item["dataset_persistent_id"].replace("doi:", ""),
+        "doi": pid,
         "dataset_name": item["dataset_name"],
-        "dataset_url": f"https://doi.org/{item['dataset_persistent_id'].replace('doi:', '')}",
+        "dataset_url": f"https://doi.org/{pid}",
+        "dataset_citation": item.get("dataset_citation"),
         "file_id": str(item["file_id"]),
         "file_checksum": item["checksum"]["value"],
         "published_at": published,
         "published_year": datetime.fromtimestamp(published, timezone.utc).year,
+        # descriptive
         "title": cit.get("title") or item["dataset_name"],
+        "subtitle": cit.get("subtitle"),
         "description": cit.get("description"),
+        # people
         "interviewee": interviewee,
-        "interviewer": [x for x in interviewer if x],
-        "interviewer_affiliation": sorted({x for x in interviewer_aff if x}),
-        "authors": [a.get("name", {}).get("label") or a.get("name", {}).get("value")
-                    for a in cit.get("author", []) or []],
+        "interviewer": interviewer,
+        "interpreter": interpreter,
+        "others": others,
+        "recorded_by": recorded_by,
+        "recorded_by_affiliation": rec_aff,
+        "recorded_by_consent": rec_consent,
+        "authors": authors,
+        "author_affiliations": author_aff,
+        "author_orcids": author_orcids,
+        # interview
         "interview_location": labels(data.get("interview_location")),
+        "interview_location_uri": uris(data.get("interview_location")),
+        "interview_location_geo": geopoints(data.get("interview_location")),
         "interview_date": interview_ts,
+        "interview_date_end": interview_end,
         "interview_year": interview_year,
-        "subject_keywords": labels(cov.get("subject_keywords")),
-        "subject_locations": labels(cov.get("subject_location")),
-        "subject_year_start": y0,
-        "subject_year_end": y1,
-        "audience": labels(rel.get("audience")),
-        "collections": labels(rel.get("collections")),
         "language_interview": labels(adm.get("language_interview")),
-        "language_metadata": label(adm.get("language_metadata")),
-        "publisher": label(cit.get("publisher")),
-        "rightsholder": label(rights.get("rightsholder")),
-        "licence": label(rights.get("licence_type")),
-        "contains_personal_data": personal,
-        "transcript_machine": text_of(data.get("transcript_machine")),
+        "language_interview_code": values(adm.get("language_interview")),
         "recording_format": labels(data.get("recording_format")),
         "recording_equipment": text_of(data.get("recording_equipment")),
-        "grants": [g for g in grants if g],
+        "transcript_machine": text_of(data.get("transcript_machine")),
+        # subject
+        "subject_keywords": labels(kws),
+        "subject_keywords_aat": aat,
+        "subject_keywords_wikidata": wiki,
+        "subject_keywords_freetext": free,
+        "subject_keyword_uri": uris(kws),
+        "subject_locations": labels(cov.get("subject_location")),
+        "subject_location_uri": uris(cov.get("subject_location")),
+        "subject_locations_geo": geopoints(cov.get("subject_location")),
+        "subject_year_start": y0,
+        "subject_year_end": y1,
+        # relations
+        "audience": labels(rel.get("audience")),
+        "audience_uri": uris(rel.get("audience")),
+        "collections": labels(rel.get("collections")),
+        "collections_uri": uris(rel.get("collections")),
+        "relation_type": [str(r["relation_type"]) for r in relations if r.get("relation_type")],
+        "relation_item": [str(r["relation_item"]) for r in relations if r.get("relation_item")],
+        "relation_reference": [str(r["relation_reference"]) for r in relations
+                               if r.get("relation_reference")],
+        # administrative / rights
+        "language_metadata": label(lang_m),
+        "language_metadata_code": (lang_m.get("value") if isinstance(lang_m, dict) else None),
         "contact_email": adm.get("contact_email"),
-        "raw": json.dumps(m, ensure_ascii=False),
+        "publisher": label(pub),
+        "publisher_ror": uri(pub),
+        "publisher_country": (pub.get("extraContent") if isinstance(pub, dict) else None),
+        "rightsholder": label(rh),
+        "rightsholder_ror": uri(rh),
+        "rightsholder_country": (rh.get("extraContent") if isinstance(rh, dict) else None),
+        "licence": label(lic),
+        "licence_url": uri(lic),
+        "contains_personal_data": personal,
+        "grants": [g for g in grants if g],
+        "grant_agencies": [str(g["grant_agency"]) for g in grant_list if g.get("grant_agency")],
+        "grant_numbers": [str(g["grant_number"]) for g in grant_list if g.get("grant_number")],
+        # attached files
+        "attachment_names": [str(f["name"]) for f in files or [] if f.get("name")],
+        "attachment_types": sorted({str(f["mimetype"]) for f in files or [] if f.get("mimetype")}),
+        "attachment_count": None if files is None else len(files),
+        "attachment_size": (None if files is None else
+                            sum(int(f.get("size") or 0) for f in files)),
+        # everything, as parsed
+        "raw": json.dumps(meta, ensure_ascii=False),
     }
-    doc["authors"] = [a for a in doc["authors"] if a]
     return clean(doc)
 
 
