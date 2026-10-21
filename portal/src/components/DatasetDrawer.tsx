@@ -378,7 +378,10 @@ function LocationDatePanel({ dataset }: { dataset: Dataset }) {
       {dataset.interview_date || dataset.interview_date_end ? (
         <MetadataRow
           label={m.interviewedDate()}
-          value={`${formatDate(dataset.interview_date) ?? ""}${dataset.interview_date && dataset.interview_date_end ? " - " : ""}${formatDate(dataset.interview_date_end) ?? ""}`}
+          value={`
+            ${formatDate(dataset.interview_date) ?? ""}
+            ${dataset.interview_date !== dataset.interview_date_end && dataset.interview_date && dataset.interview_date_end ? " - " : ""}
+            ${dataset.interview_date !== dataset.interview_date_end ? formatDate(dataset.interview_date_end) : ""}`}
         />
       ) : null}
 
