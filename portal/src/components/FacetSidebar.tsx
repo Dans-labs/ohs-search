@@ -64,16 +64,12 @@ function FiltersList() {
         <YearFilter attribute="subject_year_start" />
       </FilterSection>
 
-      <FilterSection
-        title={m.language()}
-        icon={<GlobeAltIcon className="size-4" />}
-        defaultOpen={false}
-      >
-        <RefinementList attribute="language_interview" />
-      </FilterSection>
-
       <FilterSection title={m.subjectLocations()} icon={<GlobeAltIcon className="size-4" />}>
         <GeoFilter />
+      </FilterSection>
+
+      <FilterSection title={m.language()} icon={<GlobeAltIcon className="size-4" />}>
+        <RefinementList attribute="language_interview" />
       </FilterSection>
     </div>
   );

@@ -11,10 +11,10 @@ import type { FeatureCollection } from "geojson";
 import { useGeoSearch, useRefinementList } from "react-instantsearch";
 import { cn } from "#/utils/cn";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { useTheme } from "#/components/ThemeProvider";
 
 import { setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
-
 setWorkerUrl(workerUrl);
 
 /**
@@ -84,29 +84,6 @@ function boxToGeoJSON(b: Box | null): FeatureCollection {
   };
 }
 
-// Follows the OS setting OR a `.dark` class on <html> — tweak to match how your Tailwind dark variant is wired.
-function useIsDark() {
-  const read = () =>
-    typeof document !== "undefined" &&
-    (document.documentElement.classList.contains("dark") ||
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const [dark, setDark] = useState(read);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const update = () => setDark(read());
-    mq.addEventListener("change", update);
-    const mo = new MutationObserver(update);
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => {
-      mq.removeEventListener("change", update);
-      mo.disconnect();
-    };
-  }, []);
-
-  return dark;
-}
-
 /* ---------- static layer styles (module-level = stable references) ---------- */
 
 const boxFillLayer: LayerProps = {
@@ -174,7 +151,7 @@ export default function GeoFilterMap({
   // Bounding-box refinement → insideBoundingBox search param → Typesense geo polygon filter
   const { currentRefinement, refine: refineBox, clearMapRefinement } = useGeoSearch();
 
-  const dark = useIsDark();
+  const theme = useTheme();
   const mapRef = useRef<MapRef>(null);
   const startRef = useRef<{ x: number; y: number; lng: number; lat: number } | null>(null);
   const fittedRef = useRef(false);
@@ -373,18 +350,16 @@ export default function GeoFilterMap({
 
   if (places.length === 0 && !applied) return null;
 
-  const hoverName = JSON.parse(hover?.name ?? "null");
-
   return (
     <div>
       <div className="relative h-56 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
         <MapGL
-          key={dark ? "dark" : "light"}
+          key={theme.resolvedTheme === "dark" ? "dark" : "light"}
           ref={mapRef}
           {...view}
           onMove={(e) => setView(e.viewState)}
           onLoad={() => setLoaded(true)}
-          mapStyle={dark ? STYLE_DARK : STYLE_LIGHT}
+          mapStyle={theme.resolvedTheme === "dark" ? STYLE_DARK : STYLE_LIGHT}
           interactiveLayerIds={["points"]}
           cursor={drawing ? "crosshair" : hover ? "pointer" : "grab"}
           dragPan={!drawing}
@@ -409,7 +384,10 @@ export default function GeoFilterMap({
           onTouchMove={moveDraw}
           onTouchEnd={endDraw}
           onClick={onClick}
-          style={{ width: "100%", height: "100%" }}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
         >
           <Source id="heat-src" type="geojson" data={geojson}>
             <Layer {...heatLayer} />
@@ -450,7 +428,7 @@ export default function GeoFilterMap({
             className="pointer-events-none absolute z-10 rounded-md bg-gray-900/90 px-2 py-1 text-xs text-white shadow-lg"
             style={{ left: hover.x + 12, top: hover.y + 12 }}
           >
-            <div className="font-medium">{hoverName.label}</div>
+            <div className="font-medium">{JSON.parse(hover?.name).label}</div>
             <div className="text-gray-300">
               {hover.count} dataset{hover.count === 1 ? "" : "s"}
             </div>
@@ -483,7 +461,7 @@ export default function GeoFilterMap({
                 transition hover:bg-cyan-100 dark:hover:bg-cyan-800 cursor-pointer
               "
             >
-              {p.name}
+              {JSON.parse(p.name).label}
               <span className="text-cyan-400">✕</span>
             </button>
           ))}

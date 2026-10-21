@@ -58,3 +58,7 @@ body {
 .root {
   isolation: isolate;
 }
+
+.maplibregl-ctrl-attrib {
+  display: none;
+}
