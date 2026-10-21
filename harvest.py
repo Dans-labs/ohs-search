@@ -665,7 +665,7 @@ def build_doc(item, meta):
 
     subject_locations_pt = [
         f"{lat}|{lng}|{name}"
-        for name, (lat, lng) in zip(doc["subject_locations"], doc["subject_locations_geo"])
+        for name, (lat, lng) in zip(m.get("subject_locations"), m.get("subject_locations_geo"))
     ]
         
     doc = {
