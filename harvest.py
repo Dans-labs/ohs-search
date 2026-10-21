@@ -664,8 +664,11 @@ def build_doc(item, meta):
     pid = item["dataset_persistent_id"].replace("doi:", "")
 
     subject_locations_pt = [
-        f"{lat}|{lng}|{name}"
-        for name, (lat, lng) in zip(cov.get("subject_location"), geopoints(cov.get("subject_location")))
+        f"{lat}|{lng}|{json.dumps(location, ensure_ascii=False)}"
+        for location, (lat, lng) in zip(
+            cov.get("subject_location", []),
+            geopoints(cov.get("subject_location"))
+        )
     ]
         
     doc = {

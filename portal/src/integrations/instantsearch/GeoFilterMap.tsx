@@ -12,6 +12,11 @@ import { useGeoSearch, useRefinementList } from "react-instantsearch";
 import { cn } from "#/utils/cn";
 import "maplibre-gl/dist/maplibre-gl.css";
 
+import { setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+setWorkerUrl(workerUrl);
+
 /**
  * Facet values look like "lat|lng|Place name" (see subject_locations_pt in the index).
  * That gives us accurate per-place counts WITH coordinates in a single facet query,
@@ -368,6 +373,8 @@ export default function GeoFilterMap({
 
   if (places.length === 0 && !applied) return null;
 
+  const hoverName = JSON.parse(hover?.name ?? "null");
+
   return (
     <div>
       <div className="relative h-56 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
@@ -443,7 +450,7 @@ export default function GeoFilterMap({
             className="pointer-events-none absolute z-10 rounded-md bg-gray-900/90 px-2 py-1 text-xs text-white shadow-lg"
             style={{ left: hover.x + 12, top: hover.y + 12 }}
           >
-            <div className="font-medium">{hover.name}</div>
+            <div className="font-medium">{hoverName.label}</div>
             <div className="text-gray-300">
               {hover.count} dataset{hover.count === 1 ? "" : "s"}
             </div>

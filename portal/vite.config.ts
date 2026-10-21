@@ -21,7 +21,11 @@ const config = defineConfig({
   },
   resolve: { tsconfigPaths: true },
   plugins: [
-    devtools(),
+    devtools({
+      injectSource: {
+        enabled: false,
+      },
+    }),
     paraglideVitePlugin({
       project: "./project.inlang",
       outdir: "./src/paraglide",
@@ -37,7 +41,7 @@ const config = defineConfig({
     include: ["typesense-instantsearch-adapter"],
   },
   ssr: {
-    noExternal: ["typesense-instantsearch-adapter"],
+    noExternal: ["typesense-instantsearch-adapter", "maplibre-gl"],
   },
 });
 
