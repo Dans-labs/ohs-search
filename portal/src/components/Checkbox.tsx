@@ -27,7 +27,7 @@ export function Checkbox({
         </BaseCheckbox.Indicator>
       </BaseCheckbox.Root>
 
-      <span>
+      <span className="capitalize">
         {label}{" "}
         {count && (
           <span className="bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-400 text-xs rounded-md px-1 py-0.5">

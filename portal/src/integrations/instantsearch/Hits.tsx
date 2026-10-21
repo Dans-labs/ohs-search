@@ -2,21 +2,15 @@ import { useHits } from "react-instantsearch";
 import { SortBy } from "./Sort";
 import { Link } from "@tanstack/react-router";
 import { m } from "#/paraglide/messages";
-import { CalendarIcon /*ArrowTopRightOnSquareIcon*/ } from "@heroicons/react/24/solid";
-// import { SourceBadge, LicenseBadge, FileCountBadge } from "#/components/Badges";
+import { CalendarIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
+import { LicenseBadge } from "#/components/Badges";
 import { formatDate } from "#/utils/formatters";
 import { cn } from "#/utils/cn";
 import { card } from "#/utils/surfaces";
-
-type DatasetHit = {
-  doi: string;
-  title: string;
-  description?: string;
-  published_year?: string;
-};
+import type { Dataset } from "./dataset-detail";
 
 export function Hits() {
-  const { items, results } = useHits<DatasetHit>();
+  const { items, results } = useHits<Dataset>();
 
   return (
     <div>
@@ -33,8 +27,8 @@ export function Hits() {
   );
 }
 
-function ResultCard({ hit }: { hit: DatasetHit }) {
-  const formattedDate = formatDate(hit.published_year);
+function ResultCard({ hit }: { hit: Dataset }) {
+  const formattedDate = formatDate(hit.published_at);
 
   return (
     <article className={cn("hover:-translate-y-0.5 hover:shadow-lg", card)}>
@@ -60,8 +54,7 @@ function ResultCard({ hit }: { hit: DatasetHit }) {
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        {/* <SourceBadge source={hit.data_source} /> */}
-        {/* {hit.license && <LicenseBadge license={hit.license} />} */}
+        {hit.licence && <LicenseBadge license={hit.licence} />}
         {formattedDate && (
           <span className="inline-flex items-center gap-1 text-xs text-gray-400">
             <CalendarIcon className="size-4" />
@@ -73,15 +66,15 @@ function ResultCard({ hit }: { hit: DatasetHit }) {
       {hit.description && <p className="mt-4 line-clamp-3 text-sm">{hit.description}</p>}
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        {/* {hit.authors?.length ? (
+        {hit.authors?.length ? (
           <p className="text-xs text-gray-400">{hit.authors.join(", ")}</p>
         ) : (
           <span />
-        )} */}
+        )}
 
-        {/* {hit.doi && (
+        {hit.doi && (
           <a
-            href={hit.doi_url ?? `https://doi.org/${hit.doi}`}
+            href={hit.dataset_url ?? `https://doi.org/${hit.doi}`}
             target="_blank"
             rel="noopener noreferrer"
             className="
@@ -101,7 +94,7 @@ function ResultCard({ hit }: { hit: DatasetHit }) {
             {hit.doi}
             <ArrowTopRightOnSquareIcon className="size-4" />
           </a>
-        )} */}
+        )}
       </div>
     </article>
   );

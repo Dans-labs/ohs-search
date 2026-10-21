@@ -1,11 +1,22 @@
-export function formatDate(dateStr?: string) {
-  if (!dateStr) return null;
-  const date = new Date(dateStr);
-  if (Number.isNaN(date.getTime())) return dateStr;
+export function formatDate(value?: string | number | null) {
+  if (value === undefined || value === null || value === "") return null;
+
+  let date: Date;
+  if (typeof value === "number" || /^\d+$/.test(value)) {
+    const n = Number(value);
+    // 10 digits or fewer = seconds, otherwise milliseconds
+    date = new Date(n < 1e11 ? n * 1000 : n);
+  } else {
+    date = new Date(value); // ISO strings etc.
+  }
+
+  if (Number.isNaN(date.getTime())) return String(value);
+
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    timeZone: "UTC",
   }).format(date);
 }
 

@@ -4,7 +4,7 @@
   "dataSource": "Data source",
   "subjects": "Subjects",
   "license": "License",
-  "language": "Language",
+  "language": "Interview language",
   "fileCount": "File count",
   "keywords": "Keywords",
   "publicationYear": "Publication year",
@@ -13,6 +13,19 @@
   "clearFilters": "Clear filters",
   "noResults": "No results found",
   "resultsFound": "{count} results found",
+  "subjectStart": "Subject period",
+  "interviewee": "Interviewee",
+  "interviewer": "Interviewer",
+  "recordedBy": "Recorded by",
+  "others": "Others present",
+  "interpreter": "Interpreter",
+  "interviewedDate": "Interviewed date",
+  "locationDate": "Dates and locations",
+  "subjectPeriod": "Subject period",
+  "subjectLocations": "Subject locations",
+  "interviewLocation": "Interview location",
+  "recordingEquipment": "Recording equipment",
+  "collections": "Collections",
   "resultCount": [
     {
       "declarations": ["input count", "local countPlural = count: plural"],
@@ -82,5 +95,8 @@
   "themeLight": "Light",
   "themeDark": "Dark",
   "themeSwitcherButton": "Switch theme to: {theme}",
-  "themeSwitcherButtonGroup": "Theme switcher, current theme: {theme}"
+  "themeSwitcherButtonGroup": "Theme switcher, current theme: {theme}",
+  "yes": "Yes",
+  "no": "No",
+  "unknown": "Unknown"
 }

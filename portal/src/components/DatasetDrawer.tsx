@@ -1,51 +1,21 @@
 import { useMatch, useNavigate } from "@tanstack/react-router";
 import { Drawer } from "@base-ui/react/drawer";
-// import { Tabs } from "@base-ui/react/tabs";
+import { Tabs } from "@base-ui/react/tabs";
 import { useEffect, useState } from "react";
 import {
-  // CalendarIcon,
-  // DocumentIcon,
-  // CircleStackIcon,
-  // ArrowTopRightOnSquareIcon,
-  // UserIcon,
-  // LockClosedIcon,
-  // LockOpenIcon,
-  // DocumentDuplicateIcon,
-  // CheckIcon,
+  CalendarIcon,
+  ArrowTopRightOnSquareIcon,
+  DocumentDuplicateIcon,
+  CheckIcon,
   XMarkIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
-// import { SourceBadge, LicenseBadge } from "./Badges";
-// import { formatDate, formatBytes } from "#/utils/formatters";
+import { LicenseBadge } from "./Badges";
+import { formatDate } from "#/utils/formatters";
 import { m } from "#/paraglide/messages";
 import { cn } from "#/utils/cn";
-import { card, devider /*stats, button*/ } from "#/utils/surfaces";
-
-type Contact = { name: string; affiliation?: string | null };
-
-type DatasetDetail = {
-  id: string;
-  title: string;
-  description?: string;
-  descriptions?: string[];
-  authors?: string[];
-  contacts?: Contact[];
-  rights_holders?: string[];
-  data_source: string;
-  license?: string;
-  date_of_deposit?: string;
-  doi?: string;
-  doi_url?: string;
-  file_count?: number;
-  file_access_request?: boolean;
-  total_file_size_bytes?: number;
-  subjects?: string[];
-  keywords?: string[];
-  audience?: string[];
-  languages?: string[];
-  personal_data_present?: string;
-  nbn?: string;
-  bag_id?: string;
-};
+import { card, devider, stats, button } from "#/utils/surfaces";
+import type { Dataset } from "#/integrations/instantsearch/dataset-detail";
 
 export function DatasetDrawer() {
   const navigate = useNavigate();
@@ -57,7 +27,7 @@ export function DatasetDrawer() {
 
   const isOpen = Boolean(match);
 
-  const [dataset, setDataset] = useState<DatasetDetail | null>(match?.loaderData?.dataset ?? null);
+  const [dataset, setDataset] = useState<Dataset | null>(match?.loaderData?.dataset ?? null);
 
   useEffect(() => {
     if (match?.loaderData?.dataset) {
@@ -102,13 +72,7 @@ export function DatasetDrawer() {
 }
 
 /* Content wrapper */
-export function DatasetDetails({
-  dataset,
-  isDrawer,
-}: {
-  dataset: DatasetDetail;
-  isDrawer?: boolean;
-}) {
+export function DatasetDetails({ dataset, isDrawer }: { dataset: Dataset; isDrawer?: boolean }) {
   return (
     <>
       {isDrawer ? (
@@ -117,42 +81,33 @@ export function DatasetDetails({
         <div className="space-y-8 px-8 pt-8 pb-0">
           <h1 className="text-2xl font-bold mb-2">{dataset.title}</h1>
           <div className="mt-3 flex flex-wrap gap-2">
-            {/* <SourceBadge source={dataset.data_source} /> */}
-            {/* {dataset.license && <LicenseBadge license={dataset.license} />} */}
+            {dataset.licence && <LicenseBadge license={dataset.licence} />}
           </div>
         </div>
       )}
       <div className="p-4 space-y-4 md:space-y-8 md:p-8">
-        {/* <CtaAndStats dataset={dataset} /> */}
+        <CtaAndStats dataset={dataset} />
 
-        {(dataset.description || dataset.descriptions) && (
+        {dataset.description && (
           <section>
             <SectionTitle>{m.description()}</SectionTitle>
             {isDrawer ? (
-              dataset.descriptions ? (
-                dataset.descriptions.map((desc, index) => (
-                  <Drawer.Description key={index} className="mb-1 text-sm">
-                    {desc}
-                  </Drawer.Description>
-                ))
-              ) : (
-                <Drawer.Description className="mb-1 text-sm">
-                  {dataset.description}
-                </Drawer.Description>
-              )
+              <Drawer.Description className="mb-1 text-sm">
+                {dataset.description}
+              </Drawer.Description>
             ) : (
               <p className="text-sm">{dataset.description}</p>
             )}
           </section>
         )}
-        {/* <DetailTabs dataset={dataset} /> */}
+        <DetailTabs dataset={dataset} />
       </div>
     </>
   );
 }
 
 /* Header */
-function Header({ dataset }: { dataset: DatasetDetail }) {
+function Header({ dataset }: { dataset: Dataset }) {
   return (
     <div
       className={cn(
@@ -167,8 +122,7 @@ function Header({ dataset }: { dataset: DatasetDetail }) {
           </Drawer.Title>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            {/* <SourceBadge source={dataset.data_source} /> */}
-            {/* {dataset.license && <LicenseBadge license={dataset.license} />} */}
+            {dataset.licence && <LicenseBadge license={dataset.licence} />}
           </div>
         </div>
 
@@ -190,14 +144,11 @@ function Header({ dataset }: { dataset: DatasetDetail }) {
 }
 
 /* ------------------------------ CTA + quick stats ------------------------------ */
-/*
-function CtaAndStats({ dataset }: { dataset: DatasetDetail }) {
-  const size = formatBytes(dataset.total_file_size_bytes);
-
+function CtaAndStats({ dataset }: { dataset: Dataset }) {
   return (
     <section className="space-y-4">
       <a
-        href={dataset.doi_url ?? (dataset.doi ? `https://doi.org/${dataset.doi}` : "#")}
+        href={dataset.dataset_url ?? (dataset.doi ? `https://doi.org/${dataset.doi}` : "#")}
         target="_blank"
         rel="noopener noreferrer"
         className={cn(button, "w-full")}
@@ -210,23 +161,17 @@ function CtaAndStats({ dataset }: { dataset: DatasetDetail }) {
         <StatTile
           icon={<CalendarIcon className="size-4" />}
           label={m.deposited()}
-          value={formatDate(dataset.date_of_deposit) ?? "—"}
+          value={formatDate(dataset.published_at) ?? "—"}
         />
         <StatTile
-          icon={<DocumentIcon className="size-4" />}
-          label={m.files()}
-          value={
-            dataset.file_count
-              ? `${dataset.file_count}`
-              : dataset.file_access_request
-                ? m.onRequest()
-                : m.none()
-          }
+          icon={<CalendarIcon className="size-4" />}
+          label={m.interviewedDate()}
+          value={formatDate(dataset.interview_date) ?? "—"}
         />
         <StatTile
-          icon={<CircleStackIcon className="size-4" />}
-          label={m.size()}
-          value={size ?? "—"}
+          icon={<GlobeAltIcon className="size-4" />}
+          label={m.language()}
+          value={dataset.language_interview?.map((lang) => lang).join(", ") ?? "—"}
         />
       </div>
     </section>
@@ -244,15 +189,14 @@ function StatTile({ icon, label, value }: { icon: React.ReactNode; label: string
     </div>
   );
 }
-*/
 
 /* ---------------------------------- Tabs ---------------------------------- */
-/*
-function DetailTabs({ dataset }: { dataset: DatasetDetail }) {
+function DetailTabs({ dataset }: { dataset: Dataset }) {
   return (
     <Tabs.Root defaultValue="people" className="w-full">
       <Tabs.List className={cn("relative z-1 flex gap-6 border-b", devider)}>
         <TabTrigger value="people">{m.people()}</TabTrigger>
+        <TabTrigger value="locationDate">{m.locationDate()}</TabTrigger>
         <TabTrigger value="classification">{m.classification()}</TabTrigger>
         <TabTrigger value="access">{m.rightsAndAccess()}</TabTrigger>
         <TabTrigger value="identifiers">{m.identifiers()}</TabTrigger>
@@ -269,6 +213,10 @@ function DetailTabs({ dataset }: { dataset: DatasetDetail }) {
 
       <Tabs.Panel value="people" className="mt-6">
         <PeoplePanel dataset={dataset} />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="locationDate" className="mt-6">
+        <LocationDatePanel dataset={dataset} />
       </Tabs.Panel>
 
       <Tabs.Panel value="classification" className="mt-6">
@@ -307,93 +255,161 @@ function TabTrigger({ value, children }: { value: string; children: React.ReactN
 }
 
 /* --------------------------------- Panels --------------------------------- */
-/*
-function PeoplePanel({ dataset }: { dataset: DatasetDetail }) {
-  const hasContacts = dataset.contacts && dataset.contacts.length > 0;
-
+function PeoplePanel({ dataset }: { dataset: Dataset }) {
   return (
     <div className="space-y-5">
       {dataset.authors?.length ? (
         <PanelGroup title={m.authors()}>
           <div className="flex flex-wrap gap-2">
-            {dataset.authors.map((a) => (
-              <Chip key={a}>{a}</Chip>
-            ))}
-          </div>
-        </PanelGroup>
-      ) : null}
-
-      {hasContacts ? (
-        <PanelGroup title={m.contacts()}>
-          <div className="space-y-2">
-            {dataset.contacts!.map((c) => (
-              <div key={c.name} className={cn(stats, "flex items-center gap-3")}>
-                <div
-                  className="
-                    flex h-9 w-9 shrink-0 items-center justify-center
-                    rounded-full border-cyan-500 border
-                  "
-                >
-                  <UserIcon className="size-4 text-cyan-500" />
-                </div>
-                <div>
-                  <div className="text-sm font-medium">{c.name}</div>
-                  {c.affiliation && <div className="text-xs text-gray-400">{c.affiliation}</div>}
-                </div>
-              </div>
-            ))}
-          </div>
-        </PanelGroup>
-      ) : null}
-
-      {dataset.rights_holders?.length ? (
-        <PanelGroup title={m.rightsHolders()}>
-          <div className="flex flex-wrap gap-2">
-            {dataset.rights_holders.map((r) => (
-              <Chip key={r}>{r}</Chip>
-            ))}
-          </div>
-        </PanelGroup>
-      ) : null}
-
-      {!dataset.authors?.length && !hasContacts && !dataset.rights_holders?.length && (
-        <EmptyState />
-      )}
-    </div>
-  );
-}
-*/
-/*
-function ClassificationPanel({ dataset }: { dataset: DatasetDetail }) {
-  return (
-    <div className="space-y-5">
-      {dataset.subjects?.length ? (
-        <PanelGroup title={m.subjects()}>
-          <div className="flex flex-wrap gap-2">
-            {dataset.subjects.map((s) => (
-              <Chip key={s} tone="cyan">
-                {s}
+            {dataset.authors.map((a, i) => (
+              <Chip key={a}>
+                {a}
+                {dataset.author_affiliations ? ` (${dataset.author_affiliations[i]})` : ""}
               </Chip>
             ))}
           </div>
         </PanelGroup>
       ) : null}
 
-      {dataset.keywords?.length ? (
-        <PanelGroup title={m.keywords()}>
+      {dataset.interviewee ? (
+        <PanelGroup title={m.interviewee()}>
           <div className="flex flex-wrap gap-2">
-            {dataset.keywords.map((k) => (
-              <Chip key={k}>{k}</Chip>
+            <Chip>
+              {dataset.interviewee}
+              {dataset.interviewee_affiliations ? ` (${dataset.interviewee_affiliations[0]})` : ""}
+            </Chip>
+          </div>
+        </PanelGroup>
+      ) : null}
+
+      {dataset.interviewer ? (
+        <PanelGroup title={m.interviewer()}>
+          <div className="flex flex-wrap gap-2">
+            <Chip>
+              {dataset.interviewer}
+              {dataset.interviewer_affiliations ? ` (${dataset.interviewer_affiliations[0]})` : ""}
+            </Chip>
+          </div>
+        </PanelGroup>
+      ) : null}
+
+      {dataset.recorded_by?.length ? (
+        <PanelGroup title={m.recordedBy()}>
+          <div className="flex flex-wrap gap-2">
+            {dataset.recorded_by.map((r, i) => (
+              <Chip key={r}>
+                {r}
+                {dataset.recorded_by_affiliation ? ` (${dataset.recorded_by_affiliation[i]})` : ""}
+              </Chip>
             ))}
           </div>
         </PanelGroup>
       ) : null}
 
-      {dataset.languages?.length ? (
-        <PanelGroup title={m.languages()}>
+      {dataset.others?.length ? (
+        <PanelGroup title={m.others()}>
           <div className="flex flex-wrap gap-2">
-            {dataset.languages.map((l) => (
-              <Chip key={l}>{l}</Chip>
+            {dataset.others.map((r, i) => (
+              <Chip key={r}>
+                {r}
+                {dataset.others_affiliations ? ` (${dataset.others_affiliations[i]})` : ""}
+              </Chip>
+            ))}
+          </div>
+        </PanelGroup>
+      ) : null}
+
+      {dataset.interpreter?.length ? (
+        <PanelGroup title={m.interpreter()}>
+          <div className="flex flex-wrap gap-2">
+            {dataset.interpreter.map((r, i) => (
+              <Chip key={r}>
+                {r}
+                {dataset.interpreter_affiliations
+                  ? ` (${dataset.interpreter_affiliations[i]})`
+                  : ""}
+              </Chip>
+            ))}
+          </div>
+        </PanelGroup>
+      ) : null}
+
+      {!dataset.authors?.length &&
+        !dataset.interpreter?.length &&
+        !dataset.others?.length &&
+        !dataset.interviewee &&
+        !dataset.recorded_by?.length &&
+        !dataset.interviewer?.length && <EmptyState />}
+    </div>
+  );
+}
+
+function LocationDatePanel({ dataset }: { dataset: Dataset }) {
+  console.log(dataset);
+  return (
+    <div className="space-y-5">
+      {dataset.subject_locations?.length ? (
+        <PanelGroup title={m.subjectLocations()}>
+          <div className="flex flex-wrap gap-2">
+            {dataset.subject_locations.map((r) => (
+              <Chip key={r}>{r}</Chip>
+            ))}
+          </div>
+        </PanelGroup>
+      ) : null}
+
+      {dataset.subject_year_start || dataset.subject_year_end ? (
+        <MetadataRow
+          label={m.subjectPeriod()}
+          value={`${dataset.subject_year_start ?? ""}${dataset.subject_year_start && dataset.subject_year_end ? " - " : ""}${dataset.subject_year_end ?? ""}`}
+        />
+      ) : null}
+
+      {dataset.interview_location?.length ? (
+        <PanelGroup title={m.interviewLocation()}>
+          <div className="flex flex-wrap gap-2">
+            {dataset.interview_location.map((r) => (
+              <Chip key={r}>{r}</Chip>
+            ))}
+          </div>
+        </PanelGroup>
+      ) : null}
+
+      {dataset.interview_date || dataset.interview_date_end ? (
+        <MetadataRow
+          label={m.interviewedDate()}
+          value={`${formatDate(dataset.interview_date) ?? ""}${dataset.interview_date && dataset.interview_date_end ? " - " : ""}${formatDate(dataset.interview_date_end) ?? ""}`}
+        />
+      ) : null}
+
+      {dataset.recording_equipment ? (
+        <MetadataRow label={m.recordingEquipment()} value={dataset.recording_equipment} />
+      ) : null}
+
+      {!dataset.subject_locations?.length &&
+        !dataset.interview_location?.length &&
+        !dataset.interview_date &&
+        !dataset.interview_date_end &&
+        !dataset.subject_year_start &&
+        !dataset.subject_year_end &&
+        !dataset.recording_equipment && <EmptyState />}
+    </div>
+  );
+}
+
+function ClassificationPanel({ dataset }: { dataset: Dataset }) {
+  return (
+    <div className="space-y-5">
+      {dataset.subject_keywords?.length ? (
+        <PanelGroup title={m.keywords()}>
+          <div className="flex flex-wrap gap-2">
+            {dataset.subject_keywords.map((a, i) => (
+              <Chip
+                key={a}
+                link={dataset.subject_keyword_uri?.[i] ? dataset.subject_keyword_uri[i] : undefined}
+              >
+                {a}
+              </Chip>
             ))}
           </div>
         </PanelGroup>
@@ -401,105 +417,68 @@ function ClassificationPanel({ dataset }: { dataset: DatasetDetail }) {
 
       {dataset.audience?.length ? (
         <PanelGroup title={m.audienceClassification()}>
-          <div className="space-y-2">
-            {dataset.audience.map((url) => (
-              <a
-                key={url}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="
-                  flex items-center justify-between gap-2 rounded-2xl
-                  border border-gray-200 bg-white px-4 py-3 text-sm
-                  text-gray-600 transition hover:border-cyan-300 hover:text-cyan-700
-                "
-              >
-                <span className="truncate">{url}</span>
-                <ArrowTopRightOnSquareIcon className="size-4" />
-              </a>
+          <div className="flex flex-wrap gap-2">
+            {dataset.audience.map((a, i) => (
+              <Chip key={a} link={dataset.audience_uri?.[i] ? dataset.audience_uri[i] : undefined}>
+                {a}
+              </Chip>
             ))}
           </div>
         </PanelGroup>
       ) : null}
 
-      {!dataset.subjects?.length &&
-        !dataset.keywords?.length &&
-        !dataset.languages?.length &&
+      {dataset.collections?.length ? (
+        <PanelGroup title={m.collections()}>
+          <div className="flex flex-wrap gap-2">
+            {dataset.collections.map((a, i) => (
+              <Chip
+                key={a}
+                link={dataset.collections_uri?.[i] ? dataset.collections_uri[i] : undefined}
+              >
+                {a}
+              </Chip>
+            ))}
+          </div>
+        </PanelGroup>
+      ) : null}
+
+      {!dataset.subject_keywords?.length &&
+        !dataset.collections?.length &&
         !dataset.audience?.length && <EmptyState />}
     </div>
   );
 }
-*/
-/*
-function AccessPanel({ dataset }: { dataset: DatasetDetail }) {
-  const isPersonalData = dataset.personal_data_present?.toLowerCase() === "yes";
 
+function AccessPanel({ dataset }: { dataset: Dataset }) {
   return (
     <div className="space-y-3">
-      <MetadataRow label={m.license()} value={dataset.license} />
-      <MetadataRow label={m.dataSource()} value={dataset.data_source} />
-
-      <div className="flex flex-stretch gap-2">
-        <div className={cn(stats, "flex flex-1 justify-between gap-4")}>
-          <span className="text-sm text-gray-400">{m.fileAccess()}</span>
-          <span
-            className={`
-              inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5
-              text-xs font-semibold
-              ${dataset.file_access_request ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}
-            `}
-          >
-            {dataset.file_access_request ? (
-              <LockClosedIcon className="size-4" />
-            ) : (
-              <LockOpenIcon className="size-4" />
-            )}
-            {dataset.file_access_request ? "Request required" : "Open access"}
-          </span>
-        </div>
-        {dataset.file_access_request && (
-          <a
-            href={`https://dab.surf.nl/dataset?pid=doi:${dataset.doi}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(button)}
-          >
-            {m.requestAccess()}
-            <ArrowTopRightOnSquareIcon className="size-4" />
-          </a>
-        )}
-      </div>
-
+      <MetadataRow label={m.license()} value={dataset.licence} />
+      <MetadataRow label={m.rightsHolders()} value={dataset.rightsholder} />
       <div className={cn(stats, "flex justify-between gap-4")}>
         <span className="text-sm text-gray-400">{m.personalDataPresent()}</span>
         <span
           className={`
             inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5
             text-xs font-semibold
-            ${isPersonalData ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-700"}
+            ${dataset.contains_personal_data ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-700"}
           `}
         >
-          {dataset.personal_data_present ?? "Unknown"}
+          {dataset.contains_personal_data === true ? m.yes() : m.no()}
         </span>
       </div>
     </div>
   );
 }
-*/
-/*
-function IdentifiersPanel({ dataset }: { dataset: DatasetDetail }) {
+
+function IdentifiersPanel({ dataset }: { dataset: Dataset }) {
   return (
     <div className="space-y-3">
       {dataset.doi && <CopyableField label="DOI" value={dataset.doi} />}
-      {dataset.nbn && <CopyableField label="NBN" value={dataset.nbn} />}
-      {dataset.bag_id && <CopyableField label="BAG ID" value={dataset.bag_id} />}
     </div>
   );
 }
-*/
 
 /* -------------------------------- Primitives -------------------------------- */
-/*
 function PanelGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
@@ -508,7 +487,6 @@ function PanelGroup({ title, children }: { title: string; children: React.ReactN
     </div>
   );
 }
-*/
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -518,7 +496,6 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-/*
 function MetadataRow({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
   return (
@@ -528,14 +505,34 @@ function MetadataRow({ label, value }: { label: string; value?: string }) {
     </div>
   );
 }
-*/
-/*
-function Chip({ children, tone = "zinc" }: { children: React.ReactNode; tone?: "zinc" | "cyan" }) {
+
+function Chip({
+  children,
+  tone = "zinc",
+  link,
+}: {
+  children: React.ReactNode;
+  tone?: "zinc" | "cyan";
+  link?: string;
+}) {
   const styles =
     tone === "cyan"
       ? "bg-cyan-50 text-cyan-500 ring-cyan-500 dark:ring-cyan-700"
       : "ring-gray-200 dark:ring-gray-700";
-  return (
+  return link ? (
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        stats,
+        `py-1.5 inline-flex items-center text-xs font-medium ring-1 ring-inset ${styles} gap-1 transition hover:ring-cyan-300 `,
+      )}
+    >
+      {children}
+      <ArrowTopRightOnSquareIcon className="size-4" />
+    </a>
+  ) : (
     <span
       className={cn(
         stats,
@@ -546,8 +543,7 @@ function Chip({ children, tone = "zinc" }: { children: React.ReactNode; tone?: "
     </span>
   );
 }
-*/
-/*
+
 function EmptyState() {
   return (
     <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-center text-xs text-gray-400">
@@ -555,8 +551,7 @@ function EmptyState() {
     </div>
   );
 }
-*/
-/*
+
 function CopyableField({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -587,4 +582,3 @@ function CopyableField({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-*/

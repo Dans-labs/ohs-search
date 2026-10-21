@@ -4,7 +4,7 @@
   "dataSource": "Gegevensbron",
   "subjects": "Onderwerpen",
   "license": "Licentie",
-  "language": "Taal",
+  "language": "Interviewtaal",
   "fileCount": "Aantal bestanden",
   "keywords": "Trefwoorden",
   "publicationYear": "Publicatiejaar",
@@ -13,6 +13,14 @@
   "clearFilters": "Filters wissen",
   "noResults": "Geen resultaten gevonden",
   "resultsFound": "{count} resultaten gevonden",
+  "subjectStart": "Onderwerpperiode",
+  "interviewee": "Geïnterviewde",
+  "interviewer": "Interviewer",
+  "recordedBy": "Opgenomen door",
+  "others": "Overigen aanwezig",
+  "interpreter": "Tolk",
+  "interviewedDate": "Datum van interview",
+  "locationDate": "Interviewdetails",
   "resultCount": [
     {
       "declarations": ["input count", "local countPlural = count: plural"],
@@ -82,5 +90,8 @@
   "themeLight": "Licht",
   "themeDark": "Donker",
   "themeSwitcherButton": "Schakel thema naar: {theme}",
-  "themeSwitcherButtonGroup": "Themakeuze, huidig thema: {theme}"
+  "themeSwitcherButtonGroup": "Themakeuze, huidig thema: {theme}",
+  "yes": "Ja",
+  "no": "Nee",
+  "unknown": "Onbekend"
 }

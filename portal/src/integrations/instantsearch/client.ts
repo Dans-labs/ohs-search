@@ -9,8 +9,8 @@ export function createSearchClient(config: SearchConfig) {
   return new TypesenseInstantSearchAdapter({
     server: { apiKey: config.apiKey, nodes: [config.node] },
     additionalSearchParameters: {
-      query_by: "title,description",
-      query_by_weights: "4,3",
+      query_by: "title,subtitle,description,interviewee",
+      query_by_weights: "4,3,3,4",
     },
   }).searchClient;
 }

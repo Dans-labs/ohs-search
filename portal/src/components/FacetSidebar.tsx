@@ -58,12 +58,16 @@ function FiltersList() {
         <RefinementList attribute="subject_keywords" searchable showMoreLimit={40} />
       </FilterSection>
 
+      <FilterSection title={m.subjectStart()} icon={<CalendarIcon className="size-4" />}>
+        <RangeInput attribute="subject_year_start" />
+      </FilterSection>
+
       <FilterSection
         title={m.language()}
         icon={<GlobeAltIcon className="size-4" />}
         defaultOpen={false}
       >
-        <RefinementList attribute="language_metadata" />
+        <RefinementList attribute="language_interview" />
       </FilterSection>
     </div>
   );
