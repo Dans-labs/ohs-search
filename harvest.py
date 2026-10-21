@@ -50,7 +50,7 @@ SCHEMA = {
         {"name": "published_at", "type": "int64", "sort": True},
         {"name": "published_year", "type": "int32", "facet": True},
         # --- descriptive
-        {"name": "title", "type": "string"},
+        {"name": "title", "type": "string", "sort": True},
         {"name": "subtitle", "type": "string", "optional": True},
         {"name": "description", "type": "string", "optional": True},
         # --- people

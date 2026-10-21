@@ -42,20 +42,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
       {
         rel: "apple-touch-icon",
-        sizes: "180x180",
-        href: "/src/assets/logo-180.png",
+        sizes: "192x192",
+        href: "/src/assets/logo192.png",
       },
       {
         rel: "icon",
         type: "image/png",
-        sizes: "32x32",
-        href: "/src/assets/logo-32.png",
+        sizes: "192x192",
+        href: "/src/assets/logo192.png",
       },
       {
         rel: "icon",
         type: "image/png",
-        sizes: "16x16",
-        href: "/src/assets/logo-16.png",
+        sizes: "512x512",
+        href: "/src/assets/logo512.png",
       },
     ],
     scripts: [

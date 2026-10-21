@@ -7,6 +7,7 @@ import { SearchBox } from "#/integrations/instantsearch/SearchBox";
 import { RefinementList } from "#/integrations/instantsearch/RefinementList";
 // import { ToggleRefinement } from "#/integrations/instantsearch/ToggleRefinement";
 import { RangeInput } from "#/integrations/instantsearch/RangeInput";
+import { YearFilter } from "#/integrations/instantsearch/YearFilter";
 import { FilterSection } from "./FilterSection";
 import { m } from "#/paraglide/messages";
 import {
@@ -59,7 +60,7 @@ function FiltersList() {
       </FilterSection>
 
       <FilterSection title={m.subjectStart()} icon={<CalendarIcon className="size-4" />}>
-        <RangeInput attribute="subject_year_start" />
+        <YearFilter attribute="subject_year_start" />
       </FilterSection>
 
       <FilterSection
