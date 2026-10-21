@@ -85,6 +85,7 @@ SCHEMA = {
         {"name": "subject_locations", "type": "string[]", "facet": True, "optional": True},
         {"name": "subject_location_uri", "type": "string[]", "index": False, "optional": True},
         {"name": "subject_locations_geo", "type": "geopoint[]", "optional": True},
+        {"name": "subject_locations_pt", "type": "string[]", "facet": True, "optional": True},
         {"name": "subject_year_start", "type": "int32", "facet": True, "optional": True},
         {"name": "subject_year_end", "type": "int32", "facet": True, "optional": True},
         # --- relations
@@ -661,6 +662,12 @@ def build_doc(item, meta):
             break
 
     pid = item["dataset_persistent_id"].replace("doi:", "")
+
+    subject_locations_pt = [
+        f"{lat}|{lng}|{name}"
+        for name, (lat, lng) in zip(doc["subject_locations"], doc["subject_locations_geo"])
+    ]
+        
     doc = {
         # Dataverse
         "id": str(item["dataset_id"]),
@@ -708,6 +715,7 @@ def build_doc(item, meta):
         "subject_locations": labels(cov.get("subject_location")),
         "subject_location_uri": uris(cov.get("subject_location")),
         "subject_locations_geo": geopoints(cov.get("subject_location")),
+        "subject_locations_pt": subject_locations_pt,
         "subject_year_start": y0,
         "subject_year_end": y1,
         # relations

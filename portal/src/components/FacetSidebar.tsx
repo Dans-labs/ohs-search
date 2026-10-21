@@ -23,6 +23,7 @@ import {
 import styles from "./FacetSidebar.module.css";
 import { cn } from "#/utils/cn";
 import { card, button } from "#/utils/surfaces";
+import { GeoFilter } from "#/integrations/instantsearch/GeoFilter";
 
 // Height of the collapsed "peek" state — handle + search box + padding.
 const PEEK_SNAP_POINT = "98px";
@@ -69,6 +70,10 @@ function FiltersList() {
         defaultOpen={false}
       >
         <RefinementList attribute="language_interview" />
+      </FilterSection>
+
+      <FilterSection title={m.subjectLocations()} icon={<GlobeAltIcon className="size-4" />}>
+        <GeoFilter />
       </FilterSection>
     </div>
   );

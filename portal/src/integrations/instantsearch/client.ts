@@ -12,5 +12,6 @@ export function createSearchClient(config: SearchConfig) {
       query_by: "title,subtitle,description,interviewee",
       query_by_weights: "4,3,3,4",
     },
+    geoLocationField: "subject_locations_geo",
   }).searchClient;
 }
