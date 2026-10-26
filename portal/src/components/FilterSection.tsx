@@ -6,11 +6,13 @@ export function FilterSection({
   icon,
   defaultOpen = true,
   children,
+  hideOverflow = true,
 }: {
   title: string;
   icon?: React.ReactNode;
   defaultOpen?: boolean;
   children: React.ReactNode;
+  hideOverflow?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -36,13 +38,13 @@ export function FilterSection({
       </Collapsible.Trigger>
 
       <Collapsible.Panel
-        className="
+        className={`
           h-(--collapsible-panel-height)
-          overflow-hidden
+          ${hideOverflow ? "overflow-hidden" : ""}
           transition-[height] duration-200 ease-out
           data-starting-style:h-0
           data-ending-style:h-0
-        "
+        `}
       >
         <div className="pt-3">{children}</div>
       </Collapsible.Panel>

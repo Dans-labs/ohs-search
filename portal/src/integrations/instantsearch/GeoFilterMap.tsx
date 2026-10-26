@@ -388,7 +388,7 @@ export default function GeoFilterMap({
 
   return (
     <div>
-      <div className="relative h-56 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="relative h-56 rounded-lg border border-gray-200 dark:border-gray-700">
         <MapGL
           key={theme.resolvedTheme === "dark" ? "dark" : "light"}
           ref={mapRef}

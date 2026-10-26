@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Drawer } from "@base-ui/react/drawer";
-import { ClearRefinements, useCurrentRefinements } from "react-instantsearch";
+import { useCurrentRefinements, useGeoSearch, useClearRefinements } from "react-instantsearch";
 import { SearchBox } from "#/integrations/instantsearch/SearchBox";
 import { RefinementList } from "#/integrations/instantsearch/RefinementList";
 // import { ToggleRefinement } from "#/integrations/instantsearch/ToggleRefinement";
@@ -22,8 +22,9 @@ import {
 } from "@heroicons/react/24/outline";
 import styles from "./FacetSidebar.module.css";
 import { cn } from "#/utils/cn";
-import { card, button } from "#/utils/surfaces";
+import { card } from "#/utils/surfaces";
 import { GeoFilter } from "#/integrations/instantsearch/GeoFilter";
+import { Button } from "./Button";
 
 // Height of the collapsed "peek" state — handle + search box + padding.
 const PEEK_SNAP_POINT = "98px";
@@ -31,17 +32,24 @@ const EXPANDED_SNAP_POINT = 1;
 
 function ClearRefinementsButton() {
   const { items } = useCurrentRefinements();
-  if (items.length === 0) return null;
+  const { refine: clearAttributes } = useClearRefinements();
+  const { isRefinedWithMap, clearMapRefinement } = useGeoSearch();
+
+  const hasAttributeRefinements = items.length > 0;
+  const hasMapRefinement = isRefinedWithMap();
+  const canClear = hasAttributeRefinements || hasMapRefinement;
+
+  if (!canClear) return null;
+
+  const handleClear = () => {
+    if (hasAttributeRefinements) clearAttributes();
+    if (hasMapRefinement) clearMapRefinement();
+  };
 
   return (
-    <ClearRefinements
-      classNames={{
-        button: cn(button, "w-full"),
-      }}
-      translations={{
-        resetButtonText: m.clearRefinements(),
-      }}
-    />
+    <Button full onClick={handleClear}>
+      {m.clearRefinements()}
+    </Button>
   );
 }
 
@@ -64,7 +72,11 @@ function FiltersList() {
         <YearFilter attribute="subject_year_start" />
       </FilterSection>
 
-      <FilterSection title={m.subjectLocations()} icon={<GlobeAltIcon className="size-4" />}>
+      <FilterSection
+        title={m.subjectLocations()}
+        hideOverflow={false}
+        icon={<GlobeAltIcon className="size-4" />}
+      >
         <GeoFilter />
       </FilterSection>
 
@@ -158,7 +170,7 @@ function MobileFacetDrawer() {
 export function FacetSidebar() {
   return (
     <>
-      <div className="hidden md:block">
+      <div className="hidden md:block relative z-2">
         <DesktopSidebar />
       </div>
       <div className="md:hidden">

@@ -345,7 +345,6 @@ function PeoplePanel({ dataset }: { dataset: Dataset }) {
 }
 
 function LocationDatePanel({ dataset }: { dataset: Dataset }) {
-  console.log(dataset);
   return (
     <div className="space-y-5">
       {dataset.subject_locations?.length ? (
