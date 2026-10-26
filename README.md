@@ -4,7 +4,7 @@ An interface for explorting oral history specific data, as deposited via the OH-
 
 ## Local development
 
-Typesense runs in Docker; the frontend runs on your host via `pnpm dev` (not containerized in dev — see `docker-compose.override.yml`, which only adjusts the `typesense` service).
+Typesense runs in Docker; the frontend runs on your host via `vp dev` (Vite+)
 
 1. **Start Typesense**
 
