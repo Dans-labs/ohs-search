@@ -12,9 +12,18 @@ import { useGeoSearch, useRefinementList } from "react-instantsearch";
 import { cn } from "#/utils/cn";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTheme } from "#/components/ThemeProvider";
+import { m } from "#/paraglide/messages";
 
 import { setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+import ArrowsPointingOutIcon from "@heroicons/react/24/solid/ArrowsPointingOutIcon";
+import {
+  MapIcon,
+  PencilSquareIcon,
+  ViewfinderCircleIcon,
+  ArrowRightIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 setWorkerUrl(workerUrl);
 
 /**
@@ -114,11 +123,13 @@ function ToolButton({
   onClick,
   children,
   title,
+  className,
 }: {
   active?: boolean;
   onClick: () => void;
   children: React.ReactNode;
   title?: string;
+  className?: string;
 }) {
   return (
     <button
@@ -130,9 +141,34 @@ function ToolButton({
         active
           ? "border-cyan-500 bg-cyan-500 text-white"
           : "border-gray-200 bg-white/90 text-gray-700 hover:bg-white dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-200 dark:hover:bg-gray-800",
+        className,
       )}
     >
       {children}
+    </button>
+  );
+}
+
+function SelectionButton({
+  onClick,
+  className,
+  children,
+}: {
+  onClick: () => void;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full bg-cyan-50 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-500 px-2 py-0.5 text-xs font-medium transition hover:bg-cyan-100 dark:hover:bg-cyan-800 cursor-pointer",
+        className,
+      )}
+    >
+      {children}
+      <XMarkIcon className="text-cyan-400 h-3 w-3" />
     </button>
   );
 }
@@ -405,22 +441,27 @@ export default function GeoFilterMap({
           <ToolButton
             active={drawing}
             onClick={() => setDrawing((d) => !d)}
-            title="Drag a rectangle on the map (Esc to cancel)"
+            title={m.drawRectangle()}
+            className="flex items-center gap-1"
           >
-            ▭ {drawing ? "Drag on map…" : "Draw area"}
+            <PencilSquareIcon className="h-3 w-3" /> {drawing ? m.drag() : m.draw()}
           </ToolButton>
-          <ToolButton onClick={searchView} title="Filter to what's currently in view">
-            ⌖ This view
+          <ToolButton
+            onClick={searchView}
+            title={m.filterHint()}
+            className="flex items-center gap-1"
+          >
+            <ViewfinderCircleIcon className="h-3 w-3" /> {m.thisView()}
           </ToolButton>
-          <ToolButton onClick={() => fit()} title="Zoom to all places">
-            ⤢
+          <ToolButton onClick={() => fit()} title={m.zoomHint()}>
+            <ArrowsPointingOutIcon className="h-3 w-3" />
           </ToolButton>
         </div>
 
         <div className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1.5 text-[10px] font-medium text-gray-500 dark:text-gray-400">
-          <span>fewer</span>
+          <span>{m.fewer()}</span>
           <span className="h-1.5 w-14 rounded-full bg-linear-to-r from-cyan-300 via-indigo-500 to-fuchsia-500" />
-          <span>more</span>
+          <span>{m.more()}</span>
         </div>
 
         {hover && (
@@ -429,9 +470,7 @@ export default function GeoFilterMap({
             style={{ left: hover.x + 12, top: hover.y + 12 }}
           >
             <div className="font-medium">{JSON.parse(hover?.name).label}</div>
-            <div className="text-gray-300">
-              {hover.count} dataset{hover.count === 1 ? "" : "s"}
-            </div>
+            <div className="text-gray-300">{m.datasetCount({ count: hover.count })}</div>
           </div>
         )}
       </div>
@@ -439,39 +478,21 @@ export default function GeoFilterMap({
       {(applied || selectedPlaces.length > 0) && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {applied && (
-            <button
-              onClick={() => clearMapRefinement()}
-              className="
-                inline-flex items-center gap-1 rounded-full
-                bg-cyan-50 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-500 px-2 py-0.5 text-xs font-medium
-                transition hover:bg-cyan-100 dark:hover:bg-cyan-800 cursor-pointer
-              "
-            >
-              ▭ {applied.north.toFixed(1)}°, {applied.west.toFixed(1)}° → {applied.south.toFixed(1)}
-              °, {applied.east.toFixed(1)}°<span className="text-cyan-400">✕</span>
-            </button>
+            <SelectionButton onClick={() => clearMapRefinement()}>
+              <MapIcon className="h-3 w-3" /> {applied.north.toFixed(1)}°, {applied.west.toFixed(1)}
+              ° <ArrowRightIcon className="h-3 w-3" /> {applied.south.toFixed(1)}
+              °, {applied.east.toFixed(1)}°
+            </SelectionButton>
           )}
           {selectedPlaces.map((p) => (
-            <button
-              key={p.value}
-              onClick={() => refine(p.value)}
-              className="
-                inline-flex items-center gap-1 rounded-full
-                bg-cyan-50 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-500 px-2 py-0.5 text-xs font-medium
-                transition hover:bg-cyan-100 dark:hover:bg-cyan-800 cursor-pointer
-              "
-            >
+            <SelectionButton key={p.value} onClick={() => refine(p.value)}>
               {JSON.parse(p.name).label}
-              <span className="text-cyan-400">✕</span>
-            </button>
+            </SelectionButton>
           ))}
         </div>
       )}
 
-      {/* TODO: move to paraglide, e.g. m.geoFilterHint() */}
-      <p className="mt-2 text-[11px] text-gray-400">
-        Click a dot to filter by place, or draw an area to filter by region.
-      </p>
+      <p className="mt-2 text-[11px] text-gray-400">{m.geoFilterHint()}</p>
     </div>
   );
 }
