@@ -1,4 +1,4 @@
-# Odissei Portal UI
+# Portal UI for OH-SMArt
 
 Multilingual Tanstack Start + TypeScript + Vite Plus frontend for Typesense index.
 
@@ -53,13 +53,13 @@ Build the image:
 
 ```bash
 docker build \
-  -t odissei-portal-ui .
+  -t portal-ui .
 ```
 
 Run the container and specify the required runtime variables:
 
 ```bash
-docker run --env-file .env.production -p 3000:3000 odissei-portal-ui
+docker run --env-file .env.production -p 3000:3000 portal-ui
 ```
 
 The app will be available at http://localhost:3000.
