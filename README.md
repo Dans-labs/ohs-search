@@ -15,11 +15,9 @@ The OHS data is read by the harvesting script, and inserted into a Typesense ind
 ## Extendability
 This project's UI is easily adapted to different Typesense indexes. For another example, see the [Odissei Portal experiment](https://github.com/Dans-labs/odissei-portal-exp).
 
-## Setup
+## Setup for local development
 
-### Local development
-
-#### Typesense
+### Typesense
 Typesense runs in Docker.
 
 1. **Start Typesense**
@@ -44,10 +42,10 @@ When you need to modify the collection schema, you can run:
    python harvest.py --recreate    # drop + recreate the collection (schema change)
 ```
 
-#### Frontend
+### Frontend
 Multilingual Tanstack Start + TypeScript frontend, running via Vite+.
 
-##### Configuration
+#### Configuration
 
 Go to the frontend dir `cd portal`, copy `.env.example` and fill in the values:
 
@@ -61,7 +59,7 @@ Go to the frontend dir `cd portal`, copy `.env.example` and fill in the values:
 
 For local development use `.env.development`, for production use `.env.production`.
 
-##### Running locally
+#### Running locally
 
 Make sure Vite Plus is installed. If not, install:
 
@@ -78,7 +76,7 @@ vp i
 vp dev
 ```
 
-##### Cleanup
+#### Cleanup
 
 Use Vite Plus for linting and code formatting.
 
@@ -86,13 +84,13 @@ Use Vite Plus for linting and code formatting.
 vp check
 ```
 
-##### Building
+#### Building
 
 ```bash
 vp build
 ```
 
-##### Docker
+#### Docker
 
 Build the image:
 
