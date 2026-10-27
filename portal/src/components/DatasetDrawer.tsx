@@ -49,6 +49,7 @@ export function DatasetDrawer() {
             fixed inset-0 bg-gray-950/20 backdrop-blur-sm
             transition-opacity duration-300
             data-ending-style:opacity-0 data-starting-style:opacity-0
+            z-10
           "
         />
 
