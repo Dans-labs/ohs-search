@@ -137,7 +137,7 @@ def client():
             "port": os.environ.get("TYPESENSE_PORT", "8108"),
             "protocol": os.environ.get("TYPESENSE_PROTOCOL", "http"),
         }],
-        "api_key": os.environ.get("TYPESENSE_ADMIN_API_KEY"),
+        "api_key": os.environ.get("TYPESENSE_API_KEY"),
         "connection_timeout_seconds": 30,
     })
 

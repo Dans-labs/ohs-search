@@ -22,9 +22,9 @@ def main():
     parser.add_argument("--protocol", default=os.environ.get("TYPESENSE_PROTOCOL", "http"))
     args = parser.parse_args()
 
-    admin_key = os.environ.get("TYPESENSE_ADMIN_API_KEY")
+    admin_key = os.environ.get("TYPESENSE_API_KEY")
     if not admin_key:
-        print("TYPESENSE_ADMIN_API_KEY (admin key) must be set in the environment.", file=sys.stderr)
+        print("TYPESENSE_API_KEY (admin key) must be set in the environment.", file=sys.stderr)
         sys.exit(1)
 
     client = typesense.Client({
