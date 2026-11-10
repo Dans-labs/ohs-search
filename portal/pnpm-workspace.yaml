@@ -2,3 +2,16 @@ allowBuilds:
   esbuild: true
   lightningcss: true
   typesense-instantsearch-adapter: true
+onlyBuiltDependencies:
+  - esbuild
+  - lightningcss
+overrides:
+  vite@*: "catalog:"
+peerDependencyRules:
+  allowAny:
+    - vite
+  allowedVersions:
+    vite: "*"
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@1.4.0
+  vite-plus: 1.4.0
